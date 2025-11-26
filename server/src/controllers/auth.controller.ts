@@ -40,7 +40,7 @@ export class AuthController {
             if (provider === 'GOOGLE') {
                 const result = await authService.googleLogin(token, req.ip || "", req.headers["user-agent"] || "");
                 setRefreshTokenCookie(res, result.refreshToken);
-                res.json({ accessToken: result.accessToken });
+                res.json({ accessToken: result.accessToken, user: result.user });
             } else {
                 res.status(400).json({ message: "Provider non supporté" });
             }

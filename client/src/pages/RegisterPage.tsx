@@ -35,8 +35,7 @@ export default function RegisterPage() {
                 firstName: formData.firstName,
                 lastName: formData.lastName
             });
-            // ✅ CORRECTIF : On connecte immédiatement avec le token reçu
-            login(data.user, data.token);
+            login(data.user, data.accessToken);
         } catch (error) {
             if (isAxiosError(error)) {
                 alert(error.response?.data?.message || "Erreur lors de l'inscription");
@@ -49,10 +48,11 @@ export default function RegisterPage() {
     const googleLogin = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
             try {
-                const {data} = await api.post('/auth/oauth/google', {
-                    idToken: tokenResponse.access_token
+                const {data} = await api.post('/auth/social', {
+                    token: tokenResponse.access_token,
+                    provider: 'GOOGLE'
                 });
-                login(data.user, data.token);
+                login(data.user, data.accessToken);
             } catch (err) {
                 console.error(err);
             }

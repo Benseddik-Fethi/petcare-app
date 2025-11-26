@@ -22,8 +22,7 @@ export default function LoginPage() {
     const handleLogin = async () => {
         try {
             const { data } = await api.post('/auth/login', { email, password });
-            // ✅ CORRECTIF : Ton backend renvoie "token", pas "accessToken"
-            login(data.user, data.token);
+            login(data.user, data.accessToken);
         } catch (error) {
             if (isAxiosError(error)) {
                 alert(error.response?.data?.message || "Erreur de connexion");
@@ -36,12 +35,11 @@ export default function LoginPage() {
     const googleLogin = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
             try {
-                // Note: Vérifie si ton backend attend 'idToken' ou 'accessToken'.
-                // Avec useGoogleLogin par défaut, c'est un accessToken.
-                const { data } = await api.post('/auth/oauth/google', {
-                    idToken: tokenResponse.access_token // À adapter selon ton backend
+                const { data } = await api.post('/auth/social', {
+                    token: tokenResponse.access_token,
+                    provider: 'GOOGLE'
                 });
-                login(data.user, data.token);
+                login(data.user, data.accessToken);
             } catch (err) {
                 console.error(err);
             }

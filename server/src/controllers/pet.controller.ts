@@ -7,21 +7,21 @@ export class PetController {
 
     static async getMyPets(req: Request, res: Response, next: NextFunction) {
         try {
-            const pets = await petService.getUserPets(req.user.id);
+            const pets = await petService.getUserPets(req.userId!);
             res.json(pets);
         } catch (error) { next(error); }
     }
 
     static async create(req: Request, res: Response, next: NextFunction) {
         try {
-            const pet = await petService.createPet(req.user.id, req.body);
+            const pet = await petService.createPet(req.userId!, req.body);
             res.status(201).json(pet);
         } catch (error) { next(error); }
     }
     static async getOne(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const pet = await petService.getPetDetails(id, req.user.id);
+            const pet = await petService.getPetDetails(id, req.userId!);
             res.json(pet);
         } catch (error) { next(error); }
     }
@@ -31,7 +31,7 @@ export class PetController {
             const { id } = req.params;
             const { weight, date } = req.body;
             // Note: Pense à parser 'weight' en float si envoyé en string
-            const result = await petService.addWeight(req.user.id, id, parseFloat(weight), date);
+            const result = await petService.addWeight(req.userId!, id, parseFloat(weight), date);
             res.status(201).json(result);
         } catch (error) { next(error); }
     }
@@ -39,7 +39,7 @@ export class PetController {
     static async addVaccine(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const result = await petService.addVaccine(req.user.id, id, req.body);
+            const result = await petService.addVaccine(req.userId!, id, req.body);
             res.status(201).json(result);
         } catch (error) { next(error); }
     }

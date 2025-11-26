@@ -73,7 +73,9 @@ export class AuthService {
 
         const refreshToken = await sessionRepo.create(user.id, ua, ip);
         const accessToken = signAccessToken(user.id, user.role);
-        return { accessToken, refreshToken };
+
+        const { passwordHash, ...safeUser } = user;
+        return { user: safeUser, accessToken, refreshToken };
     }
 
     async refresh(token: string) {

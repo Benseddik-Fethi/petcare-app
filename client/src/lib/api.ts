@@ -1,7 +1,7 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
-// URL de base (vérifie ton port backend, ici 4000)
-export const API_URL = 'http://localhost:4000/api';
+// URL de base configurée via variable d'environnement
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
 export const api = axios.create({
     baseURL: API_URL,
@@ -47,14 +47,13 @@ api.interceptors.response.use(
 
             try {
                 // On tente de rafraîchir le token via le cookie HttpOnly
-                // Ton backend attend POST /auth/refresh et renvoie { token, user }
                 const { data } = await api.post('/auth/refresh');
 
                 // On met à jour le token en mémoire
-                setAccessToken(data.token);
+                setAccessToken(data.accessToken);
 
                 // On met à jour le header de la requête originale et on relance
-                originalRequest.headers['Authorization'] = `Bearer ${data.token}`;
+                originalRequest.headers['Authorization'] = `Bearer ${data.accessToken}`;
                 return api(originalRequest);
             } catch (refreshError) {
                 // Si le refresh échoue, on déconnecte
