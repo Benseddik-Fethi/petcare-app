@@ -1,7 +1,40 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
-// URL de base configurée via variable d'environnement
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+const DEFAULT_API_URL = 'http://localhost:4000/api';
+
+const buildApiUrl = (rawUrl?: string) => {
+    const fallback = new URL(DEFAULT_API_URL);
+
+    if (!rawUrl) return DEFAULT_API_URL;
+
+    try {
+        const parsed = new URL(rawUrl);
+
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            throw new Error('Protocol must be http or https');
+        }
+
+        if (typeof window !== 'undefined') {
+            const allowedHosts = new Set([window.location.hostname, 'localhost', '127.0.0.1']);
+            if (!allowedHosts.has(parsed.hostname)) {
+                console.warn('VITE_API_URL hostname not allowed, falling back to same-origin API');
+                return DEFAULT_API_URL;
+            }
+        }
+
+        const normalizedPath = parsed.pathname.replace(/\/$/, '');
+        parsed.pathname = normalizedPath.endsWith('/api') ? normalizedPath : `${normalizedPath}/api`;
+
+        return parsed.toString();
+    } catch (error) {
+        console.warn('Invalid VITE_API_URL, using default API URL', error);
+        return fallback.toString();
+    }
+};
+
+// URL de base configurée via variable d'environnement avec garde-fous
+export const API_URL = buildApiUrl(import.meta.env.VITE_API_URL);
+const csrfUrl = new URL('/api/csrf-token', API_URL).toString();
 
 export const api = axios.create({
     baseURL: API_URL,
@@ -22,7 +55,7 @@ export const setAccessToken = (token: string | null) => {
 // Récupère le token CSRF depuis le serveur
 const fetchCsrfToken = async (): Promise<string> => {
     try {
-        const { data } = await axios.get(`${API_URL.replace('/api', '')}/api/csrf-token`, {
+        const { data } = await axios.get(csrfUrl, {
             withCredentials: true,
         });
         csrfToken = data.csrfToken;

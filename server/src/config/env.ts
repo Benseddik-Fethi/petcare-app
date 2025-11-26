@@ -7,7 +7,7 @@ const envSchema = z.object({
     DATABASE_URL: z.string().min(1),
 
     // Sécurité & URLs
-    FRONTEND_URL: z.string().min(1).default('http://localhost:5173'),
+    FRONTEND_URL: z.string().url().default('http://localhost:5173'),
 
     // JWT Secrets
     JWT_SECRET: z.string().min(32),
@@ -17,7 +17,7 @@ const envSchema = z.object({
 
     // Refresh Token
     REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().min(1).default(7),
-    CSRF_SECRET: z.string().min(32).default("super-secret-csrf-token-key-32chars"),
+    CSRF_SECRET: z.string().min(32),
     // Google / Facebook
     GOOGLE_CLIENT_ID: z.string().optional(),
     GOOGLE_CLIENT_SECRET: z.string().optional(),

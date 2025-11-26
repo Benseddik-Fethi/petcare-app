@@ -1,10 +1,8 @@
-import { PrismaClient, Pet, Prisma } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from "../config/prisma";
 
 export class PetRepository {
     // Trouver tous les animaux d'un propriétaire
-    async findAllByOwner(ownerId: string): Promise<Pet[]> {
+    async findAllByOwner(ownerId: string) {
         return prisma.pet.findMany({
             where: { ownerId },
             orderBy: { createdAt: 'desc' }
@@ -12,7 +10,7 @@ export class PetRepository {
     }
 
     // Créer un animal
-    async create(data: Prisma.PetCreateInput): Promise<Pet> {
+    async create(data: any) {
         return prisma.pet.create({ data });
     }
 
@@ -36,6 +34,13 @@ export class PetRepository {
                     orderBy: { date: 'asc' }
                 }
             }
+        });
+    }
+
+    async findOwnerById(id: string) {
+        return prisma.pet.findUnique({
+            where: { id },
+            select: { id: true, ownerId: true }
         });
     }
 

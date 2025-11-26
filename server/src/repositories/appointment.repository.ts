@@ -1,20 +1,18 @@
-import { PrismaClient, Appointment, Prisma, Clinic } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from "../config/prisma";
 
 export class AppointmentRepository {
 
-    async findAllClinics(): Promise<Clinic[]> {
+    async findAllClinics() {
         return prisma.clinic.findMany({
             include: { vets: true }
         });
     }
 
-    async create(data: Prisma.AppointmentCreateInput): Promise<Appointment> {
+    async create(data: any) {
         return prisma.appointment.create({ data });
     }
 
-    async findAllByUser(userId: string): Promise<Appointment[]> {
+    async findAllByUser(userId: string) {
         return prisma.appointment.findMany({
             where: { userId },
             include: {
@@ -23,5 +21,9 @@ export class AppointmentRepository {
             },
             orderBy: { date: 'asc' }
         });
+    }
+
+    async findVetById(id: string) {
+        return prisma.vet.findUnique({ where: { id } });
     }
 }
