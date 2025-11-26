@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode, useCallback } from "react";
+import { z } from "zod";
 
 import { useNavigate, useLocation } from "react-router-dom";
 import {api, setAccessToken} from "@/lib/api.ts";
@@ -9,10 +10,22 @@ export type User = {
     email: string;
     firstName?: string | null;
     lastName?: string | null;
-    role: "OWNER" | "PRO";
+    role: "OWNER" | "PRO" | "ADMIN" | "VET";
     createdAt: string;
     updatedAt: string;
 };
+
+const meResponseSchema = z.object({
+    user: z.object({
+        id: z.string(),
+        email: z.string().email(),
+        firstName: z.string().nullable().optional(),
+        lastName: z.string().nullable().optional(),
+        role: z.enum(["OWNER", "PRO", "ADMIN", "VET"]),
+        createdAt: z.string(),
+        updatedAt: z.string(),
+    })
+});
 
 interface AuthContextType {
     user: User | null;
@@ -33,8 +46,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const initAuth = useCallback(async () => {
         try {
             // On récupère le profil. Si 401, l'intercepteur d'api-client tentera le refresh.
-            const { data } = await api.get<User>("/auth/me");
-            setUser(data);
+            const { data } = await api.get<{ user: User }>("/auth/me");
+            const parsed = meResponseSchema.parse(data);
+            setUser(parsed.user);
         } catch {
             setUser(null);
         } finally {

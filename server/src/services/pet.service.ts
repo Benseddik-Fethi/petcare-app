@@ -12,7 +12,7 @@ export class PetService {
         return this.petRepo.findAllByOwner(userId);
     }
 
-    async createPet(userId: string, data: { name: string; species: string; breed?: string; weight?: string; birthDate?: string; gender?: string; color?: string; microchip?: string }) {
+    async createPet(userId: string, data: { name: string; species: string; breed?: string; weight?: string | number; birthDate?: string; gender?: string; color?: string; microchip?: string }) {
         if (!data.name || !data.species) {
             throw new AppError("Le nom et l'espèce sont obligatoires", 400);
         }
@@ -34,9 +34,9 @@ export class PetService {
         });
 
         // Si un poids est fourni, créer une entrée initiale dans WeightLog
-        if (weight) {
-            const weightValue = parseFloat(weight);
-            if (!isNaN(weightValue)) {
+        if (weight !== undefined) {
+            const weightValue = typeof weight === 'number' ? weight : parseFloat(weight);
+            if (!isNaN(weightValue) && weightValue > 0) {
                 await this.petRepo.addWeight(pet.id, weightValue, new Date());
             }
         }
