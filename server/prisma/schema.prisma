@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  VET
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+  FACEBOOK
+}
+
+model User {
+  id           String  @id @default(uuid())
+  email        String  @unique
+  passwordHash String? // Renommé pour matcher ton ancien code (sécurité sémantique)
+
+  firstName String?
+  lastName  String?
+  avatar    String?
+  role      Role    @default(OWNER)
+
+  provider   AuthProvider @default(EMAIL)
+  googleId   String?      @unique
+  facebookId String?      @unique
+
+  // 🛡️ Sécurité Compte (Brute Force)
+  failedLoginAttempts Int       @default(0)
+  lastFailedLogin     DateTime?
+  lockedUntil         DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  sessions     Session[]
+  auditLogs    AuditLog[]
+  pets         Pet[]
+  appointments Appointment[]
+  accounts     Account[] // Pour OAuth multiple
+}
+
+// 🛡️ GESTION DES SESSIONS (Refresh Tokens DB-Backed)
+model Session {
+  id               String    @id @default(uuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshTokenHash String
+  ipAddress        String?
+  userAgent        String?
+  expiresAt        DateTime
+  createdAt        DateTime  @default(now())
+  revokedAt        DateTime?
+}
+
+// 📜 JOURNAL D'AUDIT
+model AuditLog {
+  id     String  @id @default(uuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  action   String
+  metadata Json?
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+}
+
+model Account {
+  id                String       @id @default(uuid())
+  userId            String
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          AuthProvider
+  providerAccountId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+}
+
+model Pet {
+  id        String    @id @default(uuid())
+  name      String
+  species   String
+  breed     String?
+  birthDate DateTime? // Important pour calculer l'âge
+  gender    String? // "Mâle" / "Femelle"
+  microchip String? // Numéro de puce
+  color     String? // Robe
+  avatar    String?
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id])
+
+  appointments Appointment[]
+  vaccines     Vaccine[]
+  weights      WeightLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Vaccine {
+  id       String   @id @default(uuid())
+  name     String // ex: "Rage"
+  date     DateTime // Date d'injection
+  nextDate DateTime // Date de rappel
+  status   String   @default("valid") // valid, expired, upcoming
+
+  petId String
+  pet   Pet    @relation(fields: [petId], references: [id])
+}
+
+model WeightLog {
+  id     String   @id @default(uuid())
+  weight Float // Poids en kg
+  date   DateTime @default(now())
+
+  petId String
+  pet   Pet    @relation(fields: [petId], references: [id])
+}
+
+model Clinic {
+  id      String  @id @default(uuid())
+  name    String
+  address String
+  phone   String
+  email   String?
+  image   String? // Emoji ou URL
+  rating  Float?
+  reviews Int     @default(0)
+
+  vets Vet[]
+
+  createdAt DateTime @default(now())
+}
+
+model Vet {
+  id        String  @id @default(uuid())
+  name      String
+  specialty String // "Médecine générale", "Chirurgie"...
+  phone     String?
+  email     String?
+  available Boolean @default(true)
+
+  clinicId String
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+
+  appointments Appointment[]
+}
+
+model Appointment {
+  id     String   @id @default(uuid())
+  date   DateTime // Date ET Heure (ex: 2025-11-15T10:30:00Z)
+  type   String // "Vaccination", "Contrôle"...
+  status String   @default("upcoming") // upcoming, completed, cancelled
+  notes  String?
+  reason String? // Motif détaillé ou symptômes
+
+  // Relations
+  petId String
+  pet   Pet    @relation(fields: [petId], references: [id])
+
+  vetId String
+  vet   Vet    @relation(fields: [vetId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
