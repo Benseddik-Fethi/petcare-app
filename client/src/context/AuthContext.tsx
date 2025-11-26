@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         // Redirection intelligente
         if (["/login", "/register"].includes(location.pathname)) {
-            navigate("/");
+            navigate("/dashboard");
         }
     };
 

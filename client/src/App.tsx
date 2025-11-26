@@ -8,11 +8,20 @@ import CalendarPage from "@/pages/CalendarPage.tsx";
 import PetProfilePage from "@/pages/PetProfilePage.tsx";
 import SettingsPage from "@/pages/SettingsPage.tsx";
 import PetsPage from "@/pages/PetsPage.tsx";
+import { useAuth } from "@/context/AuthContext.tsx";
+
+function RootRedirect() {
+    const { user, isLoading } = useAuth();
+
+    if (isLoading) return <div>Chargement...</div>;
+
+    return <Navigate to={user ? "/dashboard" : "/login"} replace />;
+}
 
 function App() {
     return (
         <Routes>
-            <Route path="/" element={<Navigate to="/login" replace/>}/>
+            <Route path="/" element={<RootRedirect />}/>
             <Route path="/register" element={<RegisterPage/>}/>
             <Route path="/login" element={<LoginPage/>}/>
 
