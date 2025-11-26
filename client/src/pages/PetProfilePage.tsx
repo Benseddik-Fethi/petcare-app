@@ -239,15 +239,16 @@ export default function PetProfilePage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                         {/* Carte Général */}
-                        <Card className="p-6 bg-white dark:bg-slate-900 border-white dark:border-slate-800 shadow-sm rounded-3xl">
+                        <Card
+                            className="p-6 bg-white dark:bg-slate-900 border-white dark:border-slate-800 shadow-sm rounded-3xl">
                             <h3 className="font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                                <FileText className="text-rose-400" /> Général
+                                <FileText className="text-rose-400"/> Général
                             </h3>
                             <div className="space-y-1">
                                 {/* 👇 UTILISATION DU COMPOSANT ROW ICI */}
-                                <Row label="Nom" value={pet.name} />
-                                <Row label="Espèce" value={pet.species || "Non renseigné"} />
-                                <Row label="Race" value={pet.breed} />
+                                <Row label="Nom" value={pet.name}/>
+                                <Row label="Espèce" value={pet.species || "Non renseigné"}/>
+                                <Row label="Race" value={pet.breed}/>
                                 <Row
                                     label="Date de naissance"
                                     value={pet.birthDate ? format(parseISO(pet.birthDate), 'dd/MM/yyyy') : undefined}
@@ -256,15 +257,16 @@ export default function PetProfilePage() {
                         </Card>
 
                         {/* Carte Santé */}
-                        <Card className="p-6 bg-white dark:bg-slate-900 border-white dark:border-slate-800 shadow-sm rounded-3xl">
+                        <Card
+                            className="p-6 bg-white dark:bg-slate-900 border-white dark:border-slate-800 shadow-sm rounded-3xl">
                             <h3 className="font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                                 <Heart className="text-rose-400" size={20}/> Santé
                             </h3>
                             <div className="space-y-1">
                                 {/* 👇 ET ICI */}
-                                <Row label="Poids actuel" value={currentWeight ? `${currentWeight} kg` : undefined} />
-                                <Row label="Stérilisé" value="Non renseigné" /> {/* À connecter plus tard */}
-                                <Row label="Identification" value={pet.microchip} />
+                                <Row label="Poids actuel" value={currentWeight ? `${currentWeight} kg` : undefined}/>
+                                <Row label="Stérilisé" value="Non renseigné"/> {/* À connecter plus tard */}
+                                <Row label="Identification" value={pet.microchip}/>
                             </div>
                         </Card>
                     </div>
@@ -352,11 +354,14 @@ export default function PetProfilePage() {
                                                 <span>Fait le :</span>
                                                 <span>{format(parseISO(vac.date), 'dd/MM/yyyy')}</span>
                                             </div>
-                                            <div
-                                                className="flex justify-between font-medium text-emerald-700 dark:text-emerald-400">
-                                                <span>Rappel :</span>
-                                                <span>{format(parseISO(vac.nextDate), 'dd/MM/yyyy')}</span>
-                                            </div>
+                                            {vac.nextDate && (
+                                                <div
+                                                    className="flex justify-between font-medium text-emerald-700 dark:text-emerald-400">
+                                                    <span>Rappel :</span>
+                                                    <span>{format(parseISO(vac.nextDate), 'dd/MM/yyyy')}</span>
+                                                </div>
+
+                                            )}
                                         </div>
                                     </div>
                                 ))}
