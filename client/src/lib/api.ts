@@ -13,27 +13,84 @@ export const api = axios.create({
 
 // --- GESTION DU TOKEN EN MÉMOIRE (Sécurité) ---
 let accessToken: string | null = null;
+let csrfToken: string | null = null;
 
 export const setAccessToken = (token: string | null) => {
     accessToken = token;
 };
 
-// Intercepteur : Injecte le token dans chaque requête
+// Récupère le token CSRF depuis le serveur
+const fetchCsrfToken = async (): Promise<string> => {
+    try {
+        const { data } = await axios.get(`${API_URL.replace('/api', '')}/api/csrf-token`, {
+            withCredentials: true,
+        });
+        csrfToken = data.csrfToken;
+        return data.csrfToken;
+    } catch (error) {
+        console.error('Failed to fetch CSRF token:', error);
+        throw error;
+    }
+};
+
+// Initialise le token CSRF au démarrage
+fetchCsrfToken().catch(console.error);
+
+// Intercepteur : Injecte le token et le CSRF dans chaque requête
 api.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
+    async (config: InternalAxiosRequestConfig) => {
+        // Injecte le token d'authentification
         if (accessToken) {
             config.headers['Authorization'] = `Bearer ${accessToken}`;
         }
+
+        // Injecte le token CSRF pour les requêtes non-GET
+        const method = config.method?.toUpperCase();
+        if (method && !['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+            // Si on n'a pas de token CSRF, on le récupère
+            if (!csrfToken) {
+                try {
+                    await fetchCsrfToken();
+                } catch (error) {
+                    console.error('Failed to fetch CSRF token before request:', error);
+                }
+            }
+
+            // On injecte le token CSRF dans le header
+            if (csrfToken) {
+                config.headers['x-csrf-token'] = csrfToken;
+            }
+        }
+
         return config;
     },
     (error) => Promise.reject(error)
 );
 
-// Intercepteur : Gère l'expiration (Refresh Token)
+// Intercepteur : Gère l'expiration (Refresh Token) et le CSRF
 api.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean; _csrfRetry?: boolean };
+
+        // Si erreur 403 (CSRF invalide) et qu'on n'a pas déjà réessayé
+        if (error.response?.status === 403 && !originalRequest._csrfRetry) {
+            originalRequest._csrfRetry = true;
+
+            try {
+                // On rafraîchit le token CSRF
+                await fetchCsrfToken();
+
+                // On met à jour le header et on relance la requête
+                if (csrfToken && originalRequest.headers) {
+                    originalRequest.headers['x-csrf-token'] = csrfToken;
+                }
+                return api(originalRequest);
+            } catch (csrfError) {
+                console.error('Failed to refresh CSRF token:', csrfError);
+                return Promise.reject(error);
+            }
+        }
 
         // Si erreur 401 (Non autorisé) et qu'on n'a pas déjà réessayé
         if (error.response?.status === 401 && !originalRequest._retry) {
