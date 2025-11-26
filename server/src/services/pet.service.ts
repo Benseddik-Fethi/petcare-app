@@ -59,17 +59,45 @@ export class PetService {
         // Vérif propriété
         await this.getPetDetails(petId, userId); // Réutilise la vérif d'accès existante
 
-        return this.petRepo.addWeight(petId, weight, new Date(date));
+        // Validation du poids
+        if (weight <= 0 || isNaN(weight)) {
+            throw new AppError("Le poids doit être un nombre positif valide", 400);
+        }
+
+        // Validation de la date
+        const weightDate = new Date(date);
+        if (isNaN(weightDate.getTime())) {
+            throw new AppError("La date de pesée est invalide", 400);
+        }
+
+        return this.petRepo.addWeight(petId, weight, weightDate);
     }
 
     async addVaccine(userId: string, petId: string, data: { name: string, date: string, nextDate: string }) {
         await this.getPetDetails(petId, userId);
 
+        // Validation des données
+        if (!data.name || !data.date || !data.nextDate) {
+            throw new AppError("Le nom du vaccin, la date et la date de rappel sont obligatoires", 400);
+        }
+
+        // Validation des dates
+        const vaccineDate = new Date(data.date);
+        const nextVaccineDate = new Date(data.nextDate);
+
+        if (isNaN(vaccineDate.getTime())) {
+            throw new AppError("La date du vaccin est invalide", 400);
+        }
+
+        if (isNaN(nextVaccineDate.getTime())) {
+            throw new AppError("La date de rappel est invalide", 400);
+        }
+
         return this.petRepo.addVaccine(
             petId,
             data.name,
-            new Date(data.date),
-            new Date(data.nextDate)
+            vaccineDate,
+            nextVaccineDate
         );
     }
 }
