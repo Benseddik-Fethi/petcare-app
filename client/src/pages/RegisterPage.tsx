@@ -11,6 +11,18 @@ import {FacebookIcon, GoogleIcon} from "@/components/ui/Icons";
 import {isAxiosError} from "axios";
 import {useAuth} from "@/context/AuthContext";
 import {Label} from "@/components/ui/label";
+import {z, ZodError} from "zod";
+
+const registerSchema = z.object({
+    firstName: z.string().trim().min(1, "Prénom requis"),
+    lastName: z.string().trim().min(1, "Nom requis"),
+    email: z.string().email({message: "Email invalide"}),
+    password: z.string().min(8, "8 caractères minimum"),
+    confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas",
+    path: ["confirmPassword"],
+});
 
 export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
@@ -21,27 +33,30 @@ export default function RegisterPage() {
         password: "",
         confirmPassword: "",
     });
+    const [error, setError] = useState<string | null>(null);
     const {login} = useAuth();
 
     const handleRegister = async () => {
-        if (formData.password !== formData.confirmPassword) {
-            alert("Les mots de passe ne correspondent pas");
-            return;
-        }
         try {
+            const payload = registerSchema.parse(formData);
             const {data} = await api.post('/auth/register', {
-                email: formData.email,
-                password: formData.password,
-                firstName: formData.firstName,
-                lastName: formData.lastName
+                email: payload.email,
+                password: payload.password,
+                firstName: payload.firstName,
+                lastName: payload.lastName
             });
             login(data.user, data.accessToken);
+            setError(null);
         } catch (error) {
-            if (isAxiosError(error)) {
-                alert(error.response?.data?.message || "Erreur lors de l'inscription");
-            } else {
-                console.error(error);
+            if (error instanceof ZodError) {
+                setError(error.issues[0]?.message || "Champs invalides");
+                return;
             }
+            if (isAxiosError(error)) {
+                setError(error.response?.data?.message || "Erreur lors de l'inscription");
+                return;
+            }
+            console.error(error);
         }
     };
 
@@ -78,6 +93,9 @@ export default function RegisterPage() {
 
                 <CardContent className="p-8 space-y-6">
                     <div className="space-y-4">
+                        {error && (
+                            <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+                        )}
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
                                 <Label className="text-gray-600 dark:text-gray-300 pl-1">Prénom</Label>

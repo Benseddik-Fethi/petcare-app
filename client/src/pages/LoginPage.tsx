@@ -12,23 +12,38 @@ import { Link } from "react-router-dom";
 import { isAxiosError } from "axios";
 import { FacebookIcon, GoogleIcon } from "@/components/ui/Icons";
 import { useAuth } from "@/context/AuthContext";
+import { z, ZodError } from "zod";
+
+const loginSchema = z.object({
+    email: z.string().email({ message: "Email invalide" }),
+    password: z.string().min(8, "Mot de passe trop court"),
+});
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState<string | null>(null);
     const { login } = useAuth();
 
     const handleLogin = async () => {
         try {
-            const { data } = await api.post('/auth/login', { email, password });
+            const payload = loginSchema.parse({ email, password });
+            const { data } = await api.post('/auth/login', payload);
             login(data.user, data.accessToken);
+            setError(null);
         } catch (error) {
-            if (isAxiosError(error)) {
-                alert(error.response?.data?.message || "Erreur de connexion");
-            } else {
-                console.error(error);
+            if (error instanceof ZodError) {
+                setError(error.issues[0]?.message || "Champs invalides");
+                return;
             }
+
+            if (isAxiosError(error)) {
+                setError(error.response?.data?.message || "Erreur de connexion");
+                return;
+            }
+
+            console.error(error);
         }
     };
 
@@ -63,6 +78,7 @@ export default function LoginPage() {
 
                 <CardContent className="p-8 space-y-6">
                     <div className="space-y-5">
+                        {error && <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>}
                         <div className="space-y-1.5">
                             <Label className="text-gray-600 dark:text-gray-300 font-medium pl-1">Email</Label>
                             <Input

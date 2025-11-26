@@ -1,5 +1,28 @@
 import { Request, Response, NextFunction } from 'express';
 import { PetService } from '../services/pet.service';
+import { z } from "zod";
+
+const createPetSchema = z.object({
+    name: z.string().trim().min(1),
+    species: z.string().trim().min(1),
+    breed: z.string().trim().optional(),
+    weight: z.union([z.string(), z.number()]).optional(),
+    birthDate: z.string().trim().optional(),
+    gender: z.string().trim().optional(),
+    color: z.string().trim().optional(),
+    microchip: z.string().trim().optional(),
+});
+
+const weightSchema = z.object({
+    weight: z.preprocess((val) => typeof val === 'string' ? parseFloat(val) : val, z.number().positive()),
+    date: z.string().trim().min(1),
+});
+
+const vaccineSchema = z.object({
+    name: z.string().trim().min(1),
+    date: z.string().trim().min(1),
+    nextDate: z.string().trim().optional(),
+});
 
 const petService = new PetService();
 
@@ -14,7 +37,8 @@ export class PetController {
 
     static async create(req: Request, res: Response, next: NextFunction) {
         try {
-            const pet = await petService.createPet(req.userId!, req.body);
+            const payload = createPetSchema.parse(req.body);
+            const pet = await petService.createPet(req.userId!, payload);
             res.status(201).json(pet);
         } catch (error) { next(error); }
     }
@@ -29,9 +53,9 @@ export class PetController {
     static async addWeight(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const { weight, date } = req.body;
+            const { weight, date } = weightSchema.parse(req.body);
             // Note: Pense à parser 'weight' en float si envoyé en string
-            const result = await petService.addWeight(req.userId!, id, parseFloat(weight), date);
+            const result = await petService.addWeight(req.userId!, id, weight, date);
             res.status(201).json(result);
         } catch (error) { next(error); }
     }
@@ -39,7 +63,8 @@ export class PetController {
     static async addVaccine(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const result = await petService.addVaccine(req.userId!, id, req.body);
+            const payload = vaccineSchema.parse(req.body);
+            const result = await petService.addVaccine(req.userId!, id, payload);
             res.status(201).json(result);
         } catch (error) { next(error); }
     }

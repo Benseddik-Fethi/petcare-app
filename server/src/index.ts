@@ -9,6 +9,8 @@ import authRoutes from './routes/auth.routes';
 import petRoutes from './routes/pet.routes';
 import appointmentRoutes from './routes/appointment.routes';
 import {doubleCsrfProtection, generateToken} from "./middlewares/csrf.middleware";
+import { AppError } from "./utils/AppError";
+import { ZodError } from "zod";
 
 const app = express();
 
@@ -40,9 +42,22 @@ app.use('/api/appointments', appointmentRoutes);
 
 // 🚨 Error Handler
 app.use((err: any, req: any, res: any, next: any) => {
-    const statusCode = err.statusCode || 500;
-    if (statusCode === 500) logger.error(err);
-    res.status(statusCode).json({ message: err.message || "Erreur interne" });
+    const statusCode = err instanceof AppError ? err.statusCode : err instanceof ZodError ? 400 : err.statusCode || 500;
+    const isServerError = statusCode >= 500;
+
+    if (isServerError) logger.error(err);
+
+    const message = isServerError ? "Erreur interne" : err.message || "Erreur";
+    const payload: Record<string, unknown> = { message };
+
+    if (err instanceof ZodError) {
+        payload.validation = err.issues.map(issue => ({
+            path: issue.path.join('.') || 'root',
+            message: issue.message,
+        }));
+    }
+
+    res.status(statusCode).json(payload);
 });
 
 app.listen(env.PORT, () => {
