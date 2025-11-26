@@ -8,7 +8,12 @@ export const {
     doubleCsrfProtection, // Le middleware à placer avant les routes protégées
     invalidCsrfTokenError, // Erreur type
 } = doubleCsrf({
-    getSecret: () => env.CSRF_SECRET || "secret-par-defaut-tres-long-et-aleatoire-a-changer",
+    getSecret: () => {
+        if (!env.CSRF_SECRET) {
+            throw new Error("CSRF_SECRET must be set in environment variables");
+        }
+        return env.CSRF_SECRET;
+    },
     cookieName: isProduction ? "__Host-psifi.x-csrf-token" : "x-csrf-token",
     cookieOptions: {
         httpOnly: true,

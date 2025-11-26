@@ -14,7 +14,7 @@ export class AppointmentController {
 
     static async getMyAppointments(req: Request, res: Response, next: NextFunction) {
         try {
-            const appts = await service.getMyAppointments(req.user.id);
+            const appts = await service.getMyAppointments(req.userId!);
             res.json(appts);
         } catch (error) { next(error); }
     }
@@ -22,7 +22,7 @@ export class AppointmentController {
     static async create(req: Request, res: Response, next: NextFunction) {
         try {
             // TODO: Ajouter Zod validation ici
-            const appt = await service.createAppointment(req.user.id, req.body);
+            const appt = await service.createAppointment(req.userId!, req.body);
             res.status(201).json(appt);
         } catch (error) { next(error); }
     }

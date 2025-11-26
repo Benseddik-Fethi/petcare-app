@@ -112,11 +112,11 @@ export default function SettingsPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label>Prénom</Label>
-                                    <Input defaultValue={user?.firstName} className="bg-gray-50 dark:bg-slate-950"/>
+                                    <Input defaultValue={user?.firstName ?? ""} className="bg-gray-50 dark:bg-slate-950"/>
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Nom</Label>
-                                    <Input defaultValue={user?.lastName} className="bg-gray-50 dark:bg-slate-950"/>
+                                    <Input defaultValue={user?.lastName ?? ""} className="bg-gray-50 dark:bg-slate-950"/>
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Email</Label>
