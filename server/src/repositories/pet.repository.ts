@@ -47,7 +47,7 @@ export class PetRepository {
     }
 
     // Ajouter un vaccin
-    async addVaccine(petId: string, name: string, date: Date, nextDate: Date) {
+    async addVaccine(petId: string, name: string, date: Date, nextDate?: Date) {
         return prisma.vaccine.create({
             data: { petId, name, date, nextDate }
         });

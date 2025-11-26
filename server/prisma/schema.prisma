@@ -113,11 +113,11 @@ model Pet {
 }
 
 model Vaccine {
-  id       String   @id @default(uuid())
+  id       String    @id @default(uuid())
   name     String // ex: "Rage"
   date     DateTime // Date d'injection
-  nextDate DateTime // Date de rappel
-  status   String   @default("valid") // valid, expired, upcoming
+  nextDate DateTime? // Date de rappel (optionnelle)
+  status   String    @default("valid") // valid, expired, upcoming
 
   petId String
   pet   Pet    @relation(fields: [petId], references: [id])
