@@ -10,7 +10,11 @@ const sessionRepo = new SessionRepository();
 
 export class AuthService {
 
-    async register(data: any, ip: string, ua: string) {
+    async register(
+        data: { email: string; password: string; firstName: string; lastName: string },
+        ip: string,
+        ua: string
+    ) {
         const existing = await userRepo.findByEmail(data.email);
         if (existing) throw new ConflictError("Cet email est déjà utilisé");
 
