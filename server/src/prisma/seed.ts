@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import {PrismaClient} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -19,8 +19,8 @@ async function main() {
             rating: 4.8,
             vets: {
                 create: [
-                    { name: "Dr. Sophie Martin", specialty: "Médecine générale" },
-                    { name: "Dr. Pierre Dubois", specialty: "Chirurgie" },
+                    {name: "Dr. Sophie Martin", specialty: "Médecine générale"},
+                    {name: "Dr. Pierre Dubois", specialty: "Chirurgie"},
                 ]
             }
         }
@@ -35,7 +35,7 @@ async function main() {
             rating: 4.5,
             vets: {
                 create: [
-                    { name: "Dr. Jean Bernard", specialty: "Dermatologie" }
+                    {name: "Dr. Jean Bernard", specialty: "Dermatologie"}
                 ]
             }
         }
@@ -45,5 +45,10 @@ async function main() {
 }
 
 main()
-    .catch((e) => { console.error(e); process.exit(1); })
-    .finally(async () => { await prisma.$disconnect(); });
+    .catch((e) => {
+        console.error(e);
+        process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });

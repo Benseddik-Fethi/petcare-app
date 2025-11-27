@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-create-clinics-table
+      author: petcare
+      changes:
+        - createTable:
+            tableName: clinics
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address
+                  type: varchar(500)
+              - column:
+                  name: phone
+                  type: varchar(20)
+              - column:
+                  name: email
+                  type: varchar(255)
+              - column:
+                  name: website
+                  type: varchar(500)
+              - column:
+                  name: opening_hours
+                  type: varchar(1000)
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            indexName: idx_clinic_name
+            tableName: clinics
+            columns:
+              - column:
+                  name: name

@@ -1,10 +1,15 @@
-import { createContext, useContext, useState, useEffect, type ReactNode, useCallback } from "react";
-import { z } from "zod";
+// src/context/AuthContext.tsx
+import {
+    createContext,
+    type ReactNode,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
+import {useLocation, useNavigate} from "react-router-dom";
+import {api, setAccessToken} from "@/lib/api";
 
-import { useNavigate, useLocation } from "react-router-dom";
-import {api, setAccessToken} from "@/lib/api.ts";
-
-// Type User (reprise de ton fichier auth.ts)
 export type User = {
     id: string;
     email: string;
@@ -15,18 +20,6 @@ export type User = {
     updatedAt: string;
 };
 
-const meResponseSchema = z.object({
-    user: z.object({
-        id: z.string(),
-        email: z.string().email(),
-        firstName: z.string().nullable().optional(),
-        lastName: z.string().nullable().optional(),
-        role: z.enum(["OWNER", "PRO", "ADMIN", "VET"]),
-        createdAt: z.string(),
-        updatedAt: z.string(),
-    })
-});
-
 interface AuthContextType {
     user: User | null;
     isLoading: boolean;
@@ -36,20 +29,32 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({children}: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Fonction stable pour initialiser l'auth (appelée au montage)
+    const logout = useCallback(async () => {
+        try {
+            await api.post("/auth/logout");
+        } catch (e) {
+            console.error(e);
+        }
+        setAccessToken(null);
+        setUser(null);
+        navigate("/login");
+    }, [navigate]);
+
     const initAuth = useCallback(async () => {
         try {
-            // On récupère le profil. Si 401, l'intercepteur d'api-client tentera le refresh.
-            const { data } = await api.get<{ user: User }>("/auth/me");
-            const parsed = meResponseSchema.parse(data);
-            setUser(parsed.user);
+            // On tente de récupérer une session via le refresh_token en cookie
+            const {data} = await api.post<{ accessToken: string; user: User }>("/auth/refresh");
+            setAccessToken(data.accessToken);
+            setUser(data.user);
         } catch {
+            // Pas de session valide
+            setAccessToken(null);
             setUser(null);
         } finally {
             setIsLoading(false);
@@ -59,44 +64,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         initAuth();
 
-        // Écoute l'événement de déconnexion forcé (depuis api-client.ts)
+        // Déconnexion forcée déclenchée par l'intercepteur axios
         const handleLogoutEvent = () => logout();
-        window.addEventListener('auth:logout', handleLogoutEvent);
-        return () => window.removeEventListener('auth:logout', handleLogoutEvent);
-    }, [initAuth]);
+        window.addEventListener("auth:logout", handleLogoutEvent);
+        return () => window.removeEventListener("auth:logout", handleLogoutEvent);
+    }, [initAuth, logout]);
 
     const login = (newUser: User, token: string) => {
-        setAccessToken(token); // Stocke le token pour les requêtes
-        setUser(newUser);      // Met à jour l'UI
+        setAccessToken(token);
+        setUser(newUser);
 
-        // Redirection intelligente
+        // Redirige vers le dashboard si on vient de /login ou /register
         if (["/login", "/register"].includes(location.pathname)) {
             navigate("/dashboard");
         }
     };
 
-    const logout = async () => {
-        try {
-            await api.post("/auth/logout");
-        } catch (e) {
-            console.error(e);
-        }
-        setAccessToken(null);
-        setUser(null);
-        navigate("/login");
-    };
-
     return (
-        <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+        <AuthContext.Provider value={{user, isLoading, login, logout}}>
             {children}
         </AuthContext.Provider>
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error("useAuth must be used within AuthProvider");
-    }
-    return context;
+    const ctx = useContext(AuthContext);
+    if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+    return ctx;
 }

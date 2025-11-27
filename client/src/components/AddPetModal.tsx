@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useState} from "react";
 import {
     Dialog as DialogRoot,
     DialogContent,
@@ -7,12 +7,13 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog"; // Correction import
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { api } from "@/lib/api";
-import { Plus, Loader2 } from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {api} from "@/lib/api";
+import {Loader2, Plus} from "lucide-react";
+
 interface Pet {
     id: string;
     name: string;
@@ -26,11 +27,12 @@ interface Pet {
     createdAt: string;
     updatedAt: string;
 }
+
 interface AddPetModalProps {
     onPetAdded: (newPet: Pet) => void;
 }
 
-export function AddPetModal({ onPetAdded }: Readonly<AddPetModalProps>) {
+export function AddPetModal({onPetAdded}: Readonly<AddPetModalProps>) {
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -47,10 +49,10 @@ export function AddPetModal({ onPetAdded }: Readonly<AddPetModalProps>) {
         setIsLoading(true);
 
         try {
-            const { data } = await api.post('/pets', formData);
+            const {data} = await api.post('/pets', formData);
             onPetAdded(data);
             setOpen(false);
-            setFormData({ name: "", species: "Chien", breed: "", weight: "", age: "" });
+            setFormData({name: "", species: "Chien", breed: "", weight: "", age: ""});
         } catch (error) {
             console.error(error);
             alert("Erreur lors de la création");
@@ -62,8 +64,9 @@ export function AddPetModal({ onPetAdded }: Readonly<AddPetModalProps>) {
     return (
         <DialogRoot open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-rose-400 to-pink-400 text-white rounded-xl shadow-md hover:shadow-lg transition-all">
-                    <Plus size={18} className="mr-2" />
+                <Button
+                    className="bg-gradient-to-r from-rose-400 to-pink-400 text-white rounded-xl shadow-md hover:shadow-lg transition-all">
+                    <Plus size={18} className="mr-2"/>
                     Ajouter un animal
                 </Button>
             </DialogTrigger>
@@ -96,7 +99,7 @@ export function AddPetModal({ onPetAdded }: Readonly<AddPetModalProps>) {
                                 onValueChange={(val) => setFormData({...formData, species: val})}
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Choisir..." />
+                                    <SelectValue placeholder="Choisir..."/>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="Chien">🐕 Chien</SelectItem>
@@ -134,7 +137,7 @@ export function AddPetModal({ onPetAdded }: Readonly<AddPetModalProps>) {
 
                     <DialogFooter>
                         <Button type="submit" disabled={isLoading}>
-                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
                             Enregistrer
                         </Button>
                     </DialogFooter>

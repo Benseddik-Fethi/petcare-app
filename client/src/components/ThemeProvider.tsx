@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useMemo } from "react";
+import {createContext, useContext, useEffect, useMemo, useState} from "react";
 
 type Theme = "dark" | "light" | "system";
 
@@ -68,7 +68,7 @@ export function ThemeProvider({
 
     return (
         <ThemeProviderContext.Provider {...props} value={value}>
-                                       {children}
+            {children}
         </ThemeProviderContext.Provider>
     );
 }

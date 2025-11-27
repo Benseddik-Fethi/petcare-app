@@ -1,0 +1,96 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-users-table
+      author: petcare
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password_hash
+                  type: varchar(255)
+              - column:
+                  name: first_name
+                  type: varchar(100)
+              - column:
+                  name: last_name
+                  type: varchar(100)
+              - column:
+                  name: avatar
+                  type: varchar(500)
+              - column:
+                  name: role
+                  type: varchar(20)
+                  defaultValue: 'OWNER'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: provider
+                  type: varchar(20)
+                  defaultValue: 'EMAIL'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: google_id
+                  type: varchar(100)
+              - column:
+                  name: facebook_id
+                  type: varchar(100)
+              - column:
+                  name: failed_login_attempts
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_failed_login
+                  type: timestamp with time zone
+              - column:
+                  name: locked_until
+                  type: timestamp with time zone
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            indexName: idx_user_email
+            tableName: users
+            unique: true
+            columns:
+              - column:
+                  name: email
+
+        - createIndex:
+            indexName: idx_user_google_id
+            tableName: users
+            columns:
+              - column:
+                  name: google_id
+
+        - createIndex:
+            indexName: idx_user_facebook_id
+            tableName: users
+            columns:
+              - column:
+                  name: facebook_id

@@ -1,10 +1,10 @@
-import jwt, { SignOptions } from "jsonwebtoken";
-import { env } from "../../config/env";
+import jwt, {SignOptions} from "jsonwebtoken";
+import {env} from "../../config/env";
 
 export type JwtPayload = { sub: string; role?: string };
 
 export function signAccessToken(userId: string, role?: string): string {
-    const payload: JwtPayload = { sub: userId, role };
+    const payload: JwtPayload = {sub: userId, role};
     const options: SignOptions = {
         expiresIn: env.JWT_EXPIRES_IN as SignOptions["expiresIn"],
         issuer: env.JWT_ISSUER,

@@ -48,12 +48,11 @@ export default function PetsPage() {
         p.breed?.toLowerCase().includes(search.toLowerCase())
     );
 
-    // Helper pour l'icône par défaut selon l'espèce
     const getSpeciesIcon = (species: string) => {
         const s = species.toLowerCase();
         if (s.includes('chat')) return "🐈";
         if (s.includes('lapin')) return "🐇";
-        return "🐕"; // Défaut
+        return "🐕";
     };
 
     return (
@@ -104,13 +103,10 @@ export default function PetsPage() {
                             className="group relative overflow-hidden p-6 cursor-pointer hover:shadow-xl hover:shadow-rose-100/50 dark:hover:shadow-none hover:-translate-y-1 transition-all duration-300 bg-white dark:bg-slate-900 border-white dark:border-slate-800 shadow-sm rounded-3xl"
                         >
                             <div className="flex items-start gap-5">
-                                {/* Avatar */}
                                 <div
                                     className="w-20 h-20 bg-gradient-to-br from-amber-100 to-rose-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition-transform duration-300">
                                     {pet.avatar || getSpeciesIcon(pet.species)}
                                 </div>
-
-                                {/* Infos */}
                                 <div className="flex-1 min-w-0 pt-1">
                                     <h3 className="text-xl font-bold text-gray-800 dark:text-white truncate mb-1">{pet.name}</h3>
                                     <p className="text-sm text-gray-500 dark:text-gray-400 truncate flex items-center gap-1">
@@ -130,8 +126,6 @@ export default function PetsPage() {
                                         )}
                                     </div>
                                 </div>
-
-                                {/* Flèche Hover */}
                                 <div
                                     className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-300">
                                     <ChevronRight className="text-rose-400"/>

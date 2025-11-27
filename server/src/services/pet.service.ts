@@ -1,5 +1,5 @@
-import { PetRepository } from '../repositories/pet.repository';
-import { AppError } from '../utils/AppError';
+import {PetRepository} from '../repositories/pet.repository';
+import {AppError} from '../utils/AppError';
 
 export class PetService {
     private readonly petRepo: PetRepository;
@@ -12,13 +12,22 @@ export class PetService {
         return this.petRepo.findAllByOwner(userId);
     }
 
-    async createPet(userId: string, data: { name: string; species: string; breed?: string; weight?: string | number; birthDate?: string; gender?: string; color?: string; microchip?: string }) {
+    async createPet(userId: string, data: {
+        name: string;
+        species: string;
+        breed?: string;
+        weight?: string | number;
+        birthDate?: string;
+        gender?: string;
+        color?: string;
+        microchip?: string
+    }) {
         if (!data.name || !data.species) {
             throw new AppError("Le nom et l'espèce sont obligatoires", 400);
         }
 
         // Extraire le poids car il n'est pas un champ direct du modèle Pet
-        const { weight, ...petData } = data;
+        const {weight, ...petData} = data;
 
         // Créer l'animal avec les champs valides uniquement
         const pet = await this.petRepo.create({
@@ -30,7 +39,7 @@ export class PetService {
             color: petData.color,
             microchip: petData.microchip,
             avatar: data.species === 'Chien' ? '🐕' : '🐈',
-            owner: { connect: { id: userId } }
+            owner: {connect: {id: userId}}
         });
 
         // Si un poids est fourni, créer une entrée initiale dans WeightLog
@@ -43,6 +52,7 @@ export class PetService {
 
         return pet;
     }
+
     async getPetDetails(petId: string, userId: string) {
         const pet = await this.petRepo.findByIdWithDetails(petId);
 

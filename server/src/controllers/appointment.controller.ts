@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import { AppointmentService } from '../services/appointment.service';
-import { z } from "zod";
+import {NextFunction, Request, Response} from 'express';
+import {AppointmentService} from '../services/appointment.service';
+import {z} from "zod";
 
 const appointmentSchema = z.object({
     petId: z.string().uuid(),
@@ -10,7 +10,7 @@ const appointmentSchema = z.object({
     time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
     type: z.union([
         z.string().trim().min(1),
-        z.object({ label: z.string().trim().min(1) })
+        z.object({label: z.string().trim().min(1)})
     ]),
     symptoms: z.array(z.string().trim().min(1)).optional(),
     notes: z.string().trim().max(1000).optional(),
@@ -24,14 +24,18 @@ export class AppointmentController {
         try {
             const clinics = await service.getClinics();
             res.json(clinics);
-        } catch (error) { next(error); }
+        } catch (error) {
+            next(error);
+        }
     }
 
     static async getMyAppointments(req: Request, res: Response, next: NextFunction) {
         try {
             const appts = await service.getMyAppointments(req.userId!);
             res.json(appts);
-        } catch (error) { next(error); }
+        } catch (error) {
+            next(error);
+        }
     }
 
     static async create(req: Request, res: Response, next: NextFunction) {
@@ -39,6 +43,8 @@ export class AppointmentController {
             const payload = appointmentSchema.parse(req.body);
             const appt = await service.createAppointment(req.userId!, payload);
             res.status(201).json(appt);
-        } catch (error) { next(error); }
+        } catch (error) {
+            next(error);
+        }
     }
 }

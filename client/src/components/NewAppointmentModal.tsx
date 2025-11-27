@@ -1,27 +1,53 @@
-import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { Textarea } from "@/components/ui/textarea.tsx";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover.tsx";
-import { Calendar } from "@/components/ui/calendar.tsx";
-import { api } from "@/lib/api.ts";
-import { Check, ChevronRight, ChevronLeft, Calendar as CalendarIcon, Clock, MapPin, Stethoscope, Syringe, Heart, Pill, Bell, Dog, FileText, Plus } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { cn } from "@/lib/utils.ts";
+import {useEffect, useState} from "react";
+import {Dialog, DialogContent, DialogTitle, DialogTrigger} from "@/components/ui/dialog.tsx";
+import {Button} from "@/components/ui/button.tsx";
+import {Textarea} from "@/components/ui/textarea.tsx";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover.tsx";
+import {Calendar} from "@/components/ui/calendar.tsx";
+import {api} from "@/lib/api.ts";
+import {
+    Bell,
+    Calendar as CalendarIcon,
+    Check,
+    ChevronLeft,
+    ChevronRight,
+    Clock,
+    Dog,
+    FileText,
+    Heart,
+    MapPin,
+    Pill,
+    Plus,
+    Stethoscope,
+    Syringe
+} from "lucide-react";
+import {format} from "date-fns";
+import {fr} from "date-fns/locale";
+import {cn} from "@/lib/utils.ts";
 
 // ... (Types et configuration inchangés) ...
-interface Pet { id: string; name: string; breed?: string; avatar?: string; }
-interface Vet { id: string; name: string; specialty: string; clinic: { id: string; name: string; address: string }; }
+interface Pet {
+    id: string;
+    name: string;
+    breed?: string;
+    avatar?: string;
+}
+
+interface Vet {
+    id: string;
+    name: string;
+    specialty: string;
+    clinic: { id: string; name: string; address: string };
+}
 
 const appointmentTypes = [
-    { id: "vaccination", label: "Vaccination", icon: Syringe, color: "rose" },
-    { id: "checkup", label: "Contrôle annuel", icon: Stethoscope, color: "sky" },
-    { id: "dental", label: "Soins dentaires", icon: Heart, color: "amber" },
-    { id: "surgery", label: "Chirurgie", icon: Pill, color: "purple" },
-    { id: "emergency", label: "Urgence", icon: Bell, color: "red" },
-    { id: "grooming", label: "Toilettage", icon: Dog, color: "emerald" },
-    { id: "other", label: "Autre", icon: FileText, color: "gray" },
+    {id: "vaccination", label: "Vaccination", icon: Syringe, color: "rose"},
+    {id: "checkup", label: "Contrôle annuel", icon: Stethoscope, color: "sky"},
+    {id: "dental", label: "Soins dentaires", icon: Heart, color: "amber"},
+    {id: "surgery", label: "Chirurgie", icon: Pill, color: "purple"},
+    {id: "emergency", label: "Urgence", icon: Bell, color: "red"},
+    {id: "grooming", label: "Toilettage", icon: Dog, color: "emerald"},
+    {id: "other", label: "Autre", icon: FileText, color: "gray"},
 ];
 
 const getColors = (color: string, isSelected: boolean) => {
@@ -53,7 +79,7 @@ export function NewAppointmentModal() {
         time: string;
         vetId: string;
         notes: string;
-    }>({ petId: "", type: "", date: undefined, time: "", vetId: "", notes: "" });
+    }>({petId: "", type: "", date: undefined, time: "", vetId: "", notes: ""});
 
     // ... (useEffect chargement inchangé) ...
     useEffect(() => {
@@ -70,12 +96,14 @@ export function NewAppointmentModal() {
                         clinic.vets.forEach((v: any) => {
                             allVets.push({
                                 ...v,
-                                clinic: { id: clinic.id, name: clinic.name, address: clinic.address }
+                                clinic: {id: clinic.id, name: clinic.name, address: clinic.address}
                             });
                         });
                     });
                     setVets(allVets);
-                } catch (e) { console.error(e); }
+                } catch (e) {
+                    console.error(e);
+                }
             };
             loadData();
         }
@@ -93,21 +121,30 @@ export function NewAppointmentModal() {
             });
             setIsOpen(false);
             setStep(1);
-            setFormData({ petId: "", type: "", date: undefined, time: "", vetId: "", notes: "" });
+            setFormData({petId: "", type: "", date: undefined, time: "", vetId: "", notes: ""});
             window.location.reload();
-        } catch (e) { console.error(e); alert("Erreur"); }
-        finally { setLoading(false); }
+        } catch (e) {
+            console.error(e);
+            alert("Erreur");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={(val) => { setIsOpen(val); if(!val) setStep(1); }}>
+        <Dialog open={isOpen} onOpenChange={(val) => {
+            setIsOpen(val);
+            if (!val) setStep(1);
+        }}>
             <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-rose-400 to-pink-400 text-white hover:from-rose-500 hover:to-pink-500 rounded-xl shadow-sm transition-all hover:shadow-md">
-                    <Plus size={20} className="mr-2" /> Nouveau RDV
+                <Button
+                    className="bg-gradient-to-r from-rose-400 to-pink-400 text-white hover:from-rose-500 hover:to-pink-500 rounded-xl shadow-sm transition-all hover:shadow-md">
+                    <Plus size={20} className="mr-2"/> Nouveau RDV
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-2xl p-0 gap-0 bg-white/95 backdrop-blur-xl border-white/20 rounded-3xl shadow-2xl overflow-hidden">
+            <DialogContent
+                className="sm:max-w-2xl p-0 gap-0 bg-white/95 backdrop-blur-xl border-white/20 rounded-3xl shadow-2xl overflow-hidden">
 
                 {/* ... (Header inchangé) ... */}
                 <div className="px-6 py-4 border-b border-rose-100 bg-rose-50/30 flex items-center justify-between">
@@ -119,9 +156,10 @@ export function NewAppointmentModal() {
                                     "w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all",
                                     step >= s ? "bg-gradient-to-r from-rose-400 to-pink-400 text-white shadow-sm" : "bg-gray-100 text-gray-400"
                                 )}>
-                                    {step > s ? <Check size={14} /> : s}
+                                    {step > s ? <Check size={14}/> : s}
                                 </div>
-                                {s < 3 && <div className={cn("w-6 h-1 mx-1 rounded-full transition-all", step > s ? "bg-rose-300" : "bg-gray-200")} />}
+                                {s < 3 && <div
+                                    className={cn("w-6 h-1 mx-1 rounded-full transition-all", step > s ? "bg-rose-300" : "bg-gray-200")}/>}
                             </div>
                         ))}
                     </div>
@@ -133,7 +171,8 @@ export function NewAppointmentModal() {
                         <div className="space-y-6 animate-in slide-in-from-right-8 fade-in duration-300">
                             {/* ... Copie le contenu de l'étape 1 précédente ici ... */}
                             <div className="space-y-3">
-                                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">1. Choisissez l'animal</h3>
+                                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">1.
+                                    Choisissez l'animal</h3>
                                 <div className="grid grid-cols-2 gap-3">
                                     {pets.map((pet) => (
                                         <button
@@ -146,21 +185,24 @@ export function NewAppointmentModal() {
                                                     : "border-transparent bg-gray-50 hover:bg-gray-100"
                                             )}
                                         >
-                                            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm">
+                                            <div
+                                                className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm">
                                                 {pet.avatar || "🐾"}
                                             </div>
                                             <div>
                                                 <p className="font-bold text-gray-800">{pet.name}</p>
                                                 <p className="text-xs text-gray-500">{pet.breed}</p>
                                             </div>
-                                            {formData.petId === pet.id && <Check size={16} className="ml-auto text-rose-500"/>}
+                                            {formData.petId === pet.id &&
+                                                <Check size={16} className="ml-auto text-rose-500"/>}
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
                             <div className="space-y-3">
-                                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">2. Motif de consultation</h3>
+                                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">2. Motif de
+                                    consultation</h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                     {appointmentTypes.map((type) => {
                                         const isSelected = formData.type === type.label;
@@ -173,7 +215,7 @@ export function NewAppointmentModal() {
                                                     getColors(type.color, isSelected)
                                                 )}
                                             >
-                                                <type.icon size={24} />
+                                                <type.icon size={24}/>
                                                 <span className="text-xs font-medium">{type.label}</span>
                                             </button>
                                         );
@@ -205,11 +247,13 @@ export function NewAppointmentModal() {
                                                     !formData.date && "text-muted-foreground"
                                                 )}
                                             >
-                                                <CalendarIcon className="mr-2 h-4 w-4 text-rose-400" />
-                                                {formData.date ? format(formData.date, "PPP", { locale: fr }) : <span>Choisir une date</span>}
+                                                <CalendarIcon className="mr-2 h-4 w-4 text-rose-400"/>
+                                                {formData.date ? format(formData.date, "PPP", {locale: fr}) :
+                                                    <span>Choisir une date</span>}
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0 rounded-2xl border-none shadow-xl" align="start">
+                                        <PopoverContent className="w-auto p-0 rounded-2xl border-none shadow-xl"
+                                                        align="start">
                                             <Calendar
                                                 mode="single"
                                                 selected={formData.date}
@@ -227,7 +271,8 @@ export function NewAppointmentModal() {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Heure</label>
                                     <div className="relative">
-                                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-rose-400" size={18} />
+                                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-rose-400"
+                                               size={18}/>
                                         {/* Input natif time mais stylisé comme le bouton du haut */}
                                         <input
                                             type="time"
@@ -246,7 +291,8 @@ export function NewAppointmentModal() {
                         <div className="space-y-6 animate-in slide-in-from-right-8 fade-in duration-300">
                             {/* ... Copie le contenu de l'étape 3 précédente ici (Liste vétos + Notes) ... */}
                             <div className="space-y-3">
-                                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Choisissez un praticien</h3>
+                                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Choisissez
+                                    un praticien</h3>
                                 <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
                                     {vets.map((vet) => (
                                         <button
@@ -259,24 +305,27 @@ export function NewAppointmentModal() {
                                                     : "border-transparent bg-gray-50 hover:bg-gray-100"
                                             )}
                                         >
-                                            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-500 shadow-sm">
-                                                <Stethoscope size={20} />
+                                            <div
+                                                className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-500 shadow-sm">
+                                                <Stethoscope size={20}/>
                                             </div>
                                             <div className="flex-1">
                                                 <p className="font-bold text-gray-800">{vet.name}</p>
                                                 <p className="text-xs text-gray-500">{vet.specialty}</p>
                                                 <div className="flex items-center gap-1 mt-1 text-xs text-gray-400">
-                                                    <MapPin size={10} /> {vet.clinic.name}
+                                                    <MapPin size={10}/> {vet.clinic.name}
                                                 </div>
                                             </div>
-                                            {formData.vetId === vet.id && <Check size={16} className="text-emerald-600"/>}
+                                            {formData.vetId === vet.id &&
+                                                <Check size={16} className="text-emerald-600"/>}
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Notes pour le vétérinaire</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Notes pour le
+                                    vétérinaire</label>
                                 <Textarea
                                     placeholder="Symptômes, comportement inhabituel..."
                                     className="bg-gray-50 border-gray-200 rounded-xl focus:border-rose-300 resize-none"
@@ -291,10 +340,11 @@ export function NewAppointmentModal() {
                 {/* Footer */}
                 <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
                     {step > 1 ? (
-                        <Button variant="ghost" onClick={() => setStep(step - 1)} className="text-gray-500 hover:text-gray-800 hover:bg-white">
-                            <ChevronLeft size={18} className="mr-1" /> Retour
+                        <Button variant="ghost" onClick={() => setStep(step - 1)}
+                                className="text-gray-500 hover:text-gray-800 hover:bg-white">
+                            <ChevronLeft size={18} className="mr-1"/> Retour
                         </Button>
-                    ) : ( <span /> )}
+                    ) : (<span/>)}
 
                     {step < 3 ? (
                         <Button
@@ -305,7 +355,7 @@ export function NewAppointmentModal() {
                                 (step === 2 && (!formData.date || !formData.time))
                             }
                         >
-                            Suivant <ChevronRight size={18} className="ml-1" />
+                            Suivant <ChevronRight size={18} className="ml-1"/>
                         </Button>
                     ) : (
                         <Button

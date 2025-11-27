@@ -1,0 +1,61 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# LIQUIBASE - Master Changelog
+# Gestion versionnée du schéma de base de données
+# ═══════════════════════════════════════════════════════════════════════════════
+
+databaseChangeLog:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # CORE - Utilisateurs et Authentification
+  # ─────────────────────────────────────────────────────────────────────────────
+  - include:
+      file: db/changelog/v1/001-create-users-table.yaml
+  - include:
+      file: db/changelog/v1/002-create-sessions-table.yaml
+  - include:
+      file: db/changelog/v1/003-create-audit-logs-table.yaml
+  - include:
+      file: db/changelog/v1/004-create-accounts-table.yaml
+  - include:
+      file: db/changelog/v1/011-create-verification-tokens-table.yaml
+  - include:
+      file: db/changelog/v1/012-create-password-reset-tokens-table.yaml
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PETS - Animaux et Santé
+  # ─────────────────────────────────────────────────────────────────────────────
+  - include:
+      file: db/changelog/v1/005-create-pets-table.yaml
+  - include:
+      file: db/changelog/v1/006-create-vaccines-table.yaml
+  - include:
+      file: db/changelog/v1/007-create-weight-logs-table.yaml
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # CLINICS - Cliniques et Vétérinaires
+  # ─────────────────────────────────────────────────────────────────────────────
+  - include:
+      file: db/changelog/v1/008-create-clinics-table.yaml
+  - include:
+      file: db/changelog/v1/009-create-vets-table.yaml
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # APPOINTMENTS & MEDICAL
+  # ─────────────────────────────────────────────────────────────────────────────
+  - include:
+      file: db/changelog/v1/010-create-appointments-table.yaml
+  - include:
+      file: db/changelog/v1/013-create-medical-records-table.yaml
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # NOTIFICATIONS
+  # ─────────────────────────────────────────────────────────────────────────────
+  - include:
+      file: db/changelog/v1/014-create-notifications-table.yaml
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # ALTERATIONS
+  # ─────────────────────────────────────────────────────────────────────────────
+  - include:
+      file: db/changelog/v1/015-add-email-verified-to-users.yaml
+  - include:
+      file: db/changelog/v1/016-create-oauth-authorization-codes-table.yaml

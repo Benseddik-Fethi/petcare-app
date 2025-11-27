@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011-create-verification-tokens-table
+      author: petcare
+      changes:
+        - createTable:
+            tableName: verification_tokens
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: token
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_verification_user
+                    references: users(id)
+              - column:
+                  name: expires_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            indexName: idx_verification_token
+            tableName: verification_tokens
+            unique: true
+            columns:
+              - column:
+                  name: token
+
+        - createIndex:
+            indexName: idx_verification_user
+            tableName: verification_tokens
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            indexName: idx_verification_expires
+            tableName: verification_tokens
+            columns:
+              - column:
+                  name: expires_at

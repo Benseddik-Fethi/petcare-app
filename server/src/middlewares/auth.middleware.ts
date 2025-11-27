@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from "express";
-import { verifyAccessToken } from "../utils/security/jwt";
-import { UnauthorizedError } from "../utils/AppError";
+import {NextFunction, Request, Response} from "express";
+import {verifyAccessToken} from "../utils/security/jwt";
+import {UnauthorizedError} from "../utils/AppError";
 
 // Extension du type Request
 declare global {

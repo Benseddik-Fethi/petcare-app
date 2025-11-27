@@ -1,4 +1,4 @@
-import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import axios, {AxiosError, type InternalAxiosRequestConfig} from 'axios';
 
 const DEFAULT_API_URL = 'http://localhost:4000/api';
 
@@ -38,7 +38,7 @@ const csrfUrl = new URL('/api/csrf-token', API_URL).toString();
 
 export const api = axios.create({
     baseURL: API_URL,
-    withCredentials: true, // Indispensable pour les cookies (Refresh Token)
+    withCredentials: true,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -55,7 +55,7 @@ export const setAccessToken = (token: string | null) => {
 // Récupère le token CSRF depuis le serveur
 const fetchCsrfToken = async (): Promise<string> => {
     try {
-        const { data } = await axios.get(csrfUrl, {
+        const {data} = await axios.get(csrfUrl, {
             withCredentials: true,
         });
         csrfToken = data.csrfToken;
@@ -69,7 +69,6 @@ const fetchCsrfToken = async (): Promise<string> => {
 // Initialise le token CSRF au démarrage
 fetchCsrfToken().catch(console.error);
 
-// Intercepteur : Injecte le token et le CSRF dans chaque requête
 api.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {
         // Injecte le token d'authentification
@@ -77,10 +76,8 @@ api.interceptors.request.use(
             config.headers['Authorization'] = `Bearer ${accessToken}`;
         }
 
-        // Injecte le token CSRF pour les requêtes non-GET
         const method = config.method?.toUpperCase();
         if (method && !['GET', 'HEAD', 'OPTIONS'].includes(method)) {
-            // Si on n'a pas de token CSRF, on le récupère
             if (!csrfToken) {
                 try {
                     await fetchCsrfToken();
@@ -88,8 +85,6 @@ api.interceptors.request.use(
                     console.error('Failed to fetch CSRF token before request:', error);
                 }
             }
-
-            // On injecte le token CSRF dans le header
             if (csrfToken) {
                 config.headers['x-csrf-token'] = csrfToken;
             }
@@ -100,7 +95,6 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Intercepteur : Gère l'expiration (Refresh Token) et le CSRF
 api.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
@@ -137,7 +131,7 @@ api.interceptors.response.use(
 
             try {
                 // On tente de rafraîchir le token via le cookie HttpOnly
-                const { data } = await api.post('/auth/refresh');
+                const {data} = await api.post('/auth/refresh');
 
                 // On met à jour le token en mémoire
                 setAccessToken(data.accessToken);

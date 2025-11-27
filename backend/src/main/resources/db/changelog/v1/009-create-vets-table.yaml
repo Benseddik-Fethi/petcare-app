@@ -1,0 +1,70 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009-create-vets-table
+      author: petcare
+      changes:
+        - createTable:
+            tableName: vets
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: specialty
+                  type: varchar(200)
+              - column:
+                  name: phone
+                  type: varchar(20)
+              - column:
+                  name: email
+                  type: varchar(255)
+              - column:
+                  name: avatar
+                  type: varchar(500)
+              - column:
+                  name: clinic_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_vet_clinic
+                    references: clinics(id)
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            indexName: idx_vet_clinic
+            tableName: vets
+            columns:
+              - column:
+                  name: clinic_id
+
+        - createIndex:
+            indexName: idx_vet_name
+            tableName: vets
+            columns:
+              - column:
+                  name: last_name
+              - column:
+                  name: first_name

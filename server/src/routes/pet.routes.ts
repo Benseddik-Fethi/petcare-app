@@ -1,6 +1,6 @@
-import { Router } from 'express';
-import { PetController } from '../controllers/pet.controller';
-import { authenticate } from '../middlewares/auth.middleware';
+import {Router} from 'express';
+import {PetController} from '../controllers/pet.controller';
+import {authenticate} from '../middlewares/auth.middleware';
 
 const router = Router();
 

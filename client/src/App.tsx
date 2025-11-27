@@ -8,20 +8,20 @@ import CalendarPage from "@/pages/CalendarPage.tsx";
 import PetProfilePage from "@/pages/PetProfilePage.tsx";
 import SettingsPage from "@/pages/SettingsPage.tsx";
 import PetsPage from "@/pages/PetsPage.tsx";
-import { useAuth } from "@/context/AuthContext.tsx";
+import {useAuth} from "@/context/AuthContext.tsx";
 
 function RootRedirect() {
-    const { user, isLoading } = useAuth();
+    const {user, isLoading} = useAuth();
 
     if (isLoading) return <div>Chargement...</div>;
 
-    return <Navigate to={user ? "/dashboard" : "/login"} replace />;
+    return <Navigate to={user ? "/dashboard" : "/login"} replace/>;
 }
 
 function App() {
     return (
         <Routes>
-            <Route path="/" element={<RootRedirect />}/>
+            <Route path="/" element={<RootRedirect/>}/>
             <Route path="/register" element={<RegisterPage/>}/>
             <Route path="/login" element={<LoginPage/>}/>
 
@@ -29,10 +29,10 @@ function App() {
             <Route element={<ProtectedRoute/>}>
                 <Route element={<DashboardLayout/>}>
                     <Route path="/dashboard" element={<DashboardPage/>}/>
-                    <Route path="/pets" element={<PetsPage />} />
-                    <Route path="/calendar" element={<CalendarPage />} />
-                    <Route path="/pets/:id" element={<PetProfilePage />} />
-                    <Route path="/settings" element={<SettingsPage />} />
+                    <Route path="/pets" element={<PetsPage/>}/>
+                    <Route path="/calendar" element={<CalendarPage/>}/>
+                    <Route path="/pets/:id" element={<PetProfilePage/>}/>
+                    <Route path="/settings" element={<SettingsPage/>}/>
                 </Route>
             </Route>
         </Routes>

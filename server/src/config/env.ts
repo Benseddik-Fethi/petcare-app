@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { z } from 'zod';
+import {z} from 'zod';
 
 const envSchema = z.object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -11,7 +11,7 @@ const envSchema = z.object({
 
     // JWT Secrets
     JWT_SECRET: z.string().min(32),
-    JWT_EXPIRES_IN: z.string().default('15m'),
+    JWT_EXPIRES_IN: z.string().default('1H'),
     JWT_ISSUER: z.string().default('petcare-api'),
     JWT_AUDIENCE: z.string().default('petcare-app'),
 

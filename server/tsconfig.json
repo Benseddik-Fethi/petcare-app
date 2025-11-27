@@ -1,25 +1,45 @@
 {
   "compilerOptions": {
     /* Configuration de base pour Node.js moderne */
-    "target": "es2020",                  /* Version JavaScript générée (Node 14+) */
-    "module": "commonjs",                /* Standard pour les serveurs Node.js */
-    "lib": ["es2020"],                   /* Librairies incluses */
+    "target": "es2020",
+    /* Version JavaScript générée (Node 14+) */
+    "module": "commonjs",
+    /* Standard pour les serveurs Node.js */
+    "lib": [
+      "es2020"
+    ],
+    /* Librairies incluses */
 
     /* Chemins d'entrée et de sortie */
-    "rootDir": "./src",                  /* Où est ton code source TS */
-    "outDir": "./dist",                  /* Où sera le code compilé JS */
+    "rootDir": "./src",
+    /* Où est ton code source TS */
+    "outDir": "./dist",
+    /* Où sera le code compilé JS */
 
     /* Sécurité et Qualité du code (Mode Strict) */
-    "strict": true,                      /* Active toutes les vérifications strictes */
-    "noImplicitAny": true,               /* Interdit le type 'any' implicite (sécurité) */
-    "strictNullChecks": true,            /* Force à gérer les valeurs null/undefined */
+    "strict": true,
+    /* Active toutes les vérifications strictes */
+    "noImplicitAny": true,
+    /* Interdit le type 'any' implicite (sécurité) */
+    "strictNullChecks": true,
+    /* Force à gérer les valeurs null/undefined */
 
     /* Compatibilité des modules */
-    "esModuleInterop": true,             /* Permet d'importer des modules CommonJS (ex: express) proprement */
-    "skipLibCheck": true,                /* Accélère la compilation en ignorant les libs externes */
+    "esModuleInterop": true,
+    /* Permet d'importer des modules CommonJS (ex: express) proprement */
+    "skipLibCheck": true,
+    /* Accélère la compilation en ignorant les libs externes */
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true            /* Permet d'importer des fichiers .json */
+    "resolveJsonModule": true
+    /* Permet d'importer des fichiers .json */
   },
-  "include": ["src/**/*"],               /* Inclure tout le dossier src */
-  "exclude": ["node_modules", "dist"]    /* Ignorer les dépendances et le build */
+  "include": [
+    "src/**/*"
+  ],
+  /* Inclure tout le dossier src */
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+  /* Ignorer les dépendances et le build */
 }

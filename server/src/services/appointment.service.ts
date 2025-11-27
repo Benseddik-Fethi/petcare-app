@@ -1,6 +1,6 @@
-import { AppointmentRepository } from '../repositories/appointment.repository';
-import { PetRepository } from "../repositories/pet.repository";
-import { BadRequestError, ForbiddenError, NotFoundError } from "../utils/AppError";
+import {AppointmentRepository} from '../repositories/appointment.repository';
+import {PetRepository} from "../repositories/pet.repository";
+import {BadRequestError, ForbiddenError, NotFoundError} from "../utils/AppError";
 
 type AppointmentPayload = {
     petId: string;
@@ -61,9 +61,9 @@ export class AppointmentService {
             type,
             reason,
             notes,
-            user: { connect: { id: userId } },
-            pet: { connect: { id: data.petId } },
-            vet: { connect: { id: data.vetId } },
+            user: {connect: {id: userId}},
+            pet: {connect: {id: data.petId}},
+            vet: {connect: {id: data.vetId}},
             status: "upcoming"
         });
     }

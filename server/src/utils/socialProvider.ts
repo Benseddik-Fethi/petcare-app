@@ -11,8 +11,8 @@ interface SocialProfile {
 // 1. VÉRIFICATION GOOGLE (Via Access Token)
 export const verifyGoogleToken = async (token: string): Promise<SocialProfile> => {
     try {
-        const { data } = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
-            headers: { Authorization: `Bearer ${token}` }
+        const {data} = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: {Authorization: `Bearer ${token}`}
         });
 
         return {
@@ -32,7 +32,7 @@ export const verifyGoogleToken = async (token: string): Promise<SocialProfile> =
 export const verifyFacebookToken = async (token: string): Promise<SocialProfile> => {
     try {
 
-        const { data } = await axios.get(
+        const {data} = await axios.get(
             `https://graph.facebook.com/me?fields=id,email,first_name,last_name,picture.type(large)&access_token=${token}`
         );
 

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { cn } from "@/lib/utils"
+import {cn} from "@/lib/utils"
 import type {LucideIcon} from "lucide-react";
 
 // On étend les props HTML standards pour y ajouter notre prop 'icon' optionnelle
@@ -9,12 +9,12 @@ export interface InputProps
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-    ({ className, type, icon: Icon, ...props }, ref) => {
+    ({className, type, icon: Icon, ...props}, ref) => {
         if (Icon) {
             return (
                 <div className="relative w-full">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                        <Icon className="h-4 w-4" />
+                        <Icon className="h-4 w-4"/>
                     </div>
                     <input
                         type={type}
@@ -45,4 +45,4 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 )
 Input.displayName = "Input"
 
-export { Input }
+export {Input}

@@ -1,5 +1,5 @@
-import { doubleCsrf } from "csrf-csrf";
-import { env } from "../config/env";
+import {doubleCsrf} from "csrf-csrf";
+import {env} from "../config/env";
 
 const isProduction = env.NODE_ENV === "production";
 

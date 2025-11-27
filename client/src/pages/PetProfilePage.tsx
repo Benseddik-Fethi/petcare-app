@@ -11,7 +11,8 @@ import {
     ChevronLeft,
     Clock,
     Edit3,
-    FileText, Heart,
+    FileText,
+    Heart,
     Stethoscope,
     Syringe,
     TrendingUp,
@@ -69,8 +70,6 @@ export default function PetProfilePage() {
     const fetchPet = async () => {
         try {
             const {data} = await api.get(`/pets/${id}`);
-            // Log pour debug
-            console.log("Données reçues:", data);
             setPet(data);
         } catch (error) {
             console.error(error);
@@ -98,8 +97,6 @@ export default function PetProfilePage() {
         }
     }
 
-    // Poids
-    // On trie par date pour être sûr d'avoir le dernier, car l'ordre d'insertion peut varier
     const sortedWeights = [...(pet.weights || [])].sort((a, b) =>
         new Date(a.date).getTime() - new Date(b.date).getTime()
     );
@@ -134,8 +131,6 @@ export default function PetProfilePage() {
                     className="flex items-center gap-2 text-gray-500 hover:text-rose-500 dark:text-gray-400 dark:hover:text-rose-400 transition-colors">
                 <ChevronLeft size={20}/> Retour au dashboard
             </button>
-
-            {/* HEADER */}
             <Card
                 className="p-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-white dark:border-slate-800 shadow-sm rounded-[32px]">
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-6 text-center md:text-left">

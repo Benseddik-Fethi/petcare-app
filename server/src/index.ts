@@ -1,20 +1,19 @@
-import express, { type ErrorRequestHandler } from 'express';
+import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import { httpLogger, logger } from './utils/logger';
-import { env } from './config/env';
-import { apiLimiter } from './middlewares/rateLimiter';
+import {httpLogger, logger} from './utils/logger';
+import {env} from './config/env';
+import {apiLimiter} from './middlewares/rateLimiter';
 import authRoutes from './routes/auth.routes';
 import petRoutes from './routes/pet.routes';
 import appointmentRoutes from './routes/appointment.routes';
 import {doubleCsrfProtection, generateToken} from "./middlewares/csrf.middleware";
-import { AppError } from "./utils/AppError";
-import { ZodError } from "zod";
+import {AppError} from "./utils/AppError";
+import {ZodError} from "zod";
 
 const app = express();
 
-// 🛡️ Sécurité
 app.use(helmet());
 app.use(cors({
     origin: env.FRONTEND_URL,
@@ -22,18 +21,15 @@ app.use(cors({
 }));
 app.use(apiLimiter);
 app.use(cookieParser());
-app.use(express.json({ limit: '10kb' })); // Protection payload
+app.use(express.json({limit: '10kb'})); // Protection payload
 
-// 📝 Logs
 app.use(httpLogger);
-// 👇 1. Endpoint pour donner le token au Frontend
+
 app.get('/api/csrf-token', (req, res) => {
     const csrfToken = generateToken(req, res);
-    res.json({ csrfToken });
+    res.json({csrfToken});
 });
 
-// 👇 2. Activation de la protection pour tout ce qui suit
-// Toutes les routes POST/PUT/DELETE définies APRES cette ligne nécessiteront le header X-CSRF-Token
 app.use(doubleCsrfProtection);
 // 🛣️ Routes
 app.use('/api/auth', authRoutes);
@@ -48,7 +44,7 @@ app.use((err: any, req: any, res: any, next: any) => {
     if (isServerError) logger.error(err);
 
     const message = isServerError ? "Erreur interne" : err.message || "Erreur";
-    const payload: Record<string, unknown> = { message };
+    const payload: Record<string, unknown> = {message};
 
     if (err instanceof ZodError) {
         payload.validation = err.issues.map(issue => ({
@@ -61,5 +57,5 @@ app.use((err: any, req: any, res: any, next: any) => {
 });
 
 app.listen(env.PORT, () => {
-    logger.info(`🚀 Server running on port ${env.PORT}`);
+    logger.info(`Server running on port ${env.PORT}`);
 });

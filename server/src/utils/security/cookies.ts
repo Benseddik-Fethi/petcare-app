@@ -1,5 +1,5 @@
-import type { Response } from "express";
-import { env } from "../../config/env";
+import type {Response} from "express";
+import {env} from "../../config/env";
 
 export const REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
 const isProduction = env.NODE_ENV === "production";

@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 015-add-email-verified-to-users
+      author: petcare
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: email_verified
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

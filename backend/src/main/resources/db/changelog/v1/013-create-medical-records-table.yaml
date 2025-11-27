@@ -1,0 +1,99 @@
+databaseChangeLog:
+  - changeSet:
+      id: 013-create-medical-records-table
+      author: petcare
+      changes:
+        - createTable:
+            tableName: medical_records
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: record_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: diagnosis
+                  type: varchar(500)
+              - column:
+                  name: treatment
+                  type: text
+              - column:
+                  name: medications
+                  type: varchar(1000)
+              - column:
+                  name: lab_results
+                  type: jsonb
+              - column:
+                  name: attachments
+                  type: jsonb
+              - column:
+                  name: cost
+                  type: decimal(10,2)
+              - column:
+                  name: notes
+                  type: text
+              - column:
+                  name: pet_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_medical_pet
+                    references: pets(id)
+              - column:
+                  name: vet_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_medical_vet
+                    references: vets(id)
+              - column:
+                  name: appointment_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_medical_appointment
+                    references: appointments(id)
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            indexName: idx_medical_pet
+            tableName: medical_records
+            columns:
+              - column:
+                  name: pet_id
+
+        - createIndex:
+            indexName: idx_medical_date
+            tableName: medical_records
+            columns:
+              - column:
+                  name: date
+
+        - createIndex:
+            indexName: idx_medical_type
+            tableName: medical_records
+            columns:
+              - column:
+                  name: record_type

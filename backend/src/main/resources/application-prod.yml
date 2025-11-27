@@ -1,0 +1,52 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# PETCARE API - Profil PRODUCTION
+# 🛡️ Paramètres de sécurité renforcés
+# ═══════════════════════════════════════════════════════════════════════════════
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none  # 🛡️ CRITIQUE : Jamais de modification auto du schéma en prod
+    show-sql: false
+
+  # Désactiver les outils de dev
+  devtools:
+    restart:
+      enabled: false
+
+server:
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-exception: false
+
+  # 🛡️ Headers de sécurité (complément à Spring Security)
+  tomcat:
+    remoteip:
+      remote-ip-header: X-Forwarded-For
+      protocol-header: X-Forwarded-Proto
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# LOGGING PRODUCTION
+# ═══════════════════════════════════════════════════════════════════════════════
+logging:
+  level:
+    root: WARN
+    com.petcare: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+  # Format JSON pour les agrégateurs de logs (ELK, Datadog, etc.)
+  pattern:
+    console: '{"timestamp":"%d{ISO8601}","level":"%level","logger":"%logger","message":"%msg","thread":"%thread"}%n'
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ACTUATOR - Restreint en production
+# ═══════════════════════════════════════════════════════════════════════════════
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info  # Minimum nécessaire
+  endpoint:
+    health:
+      show-details: never     # Ne pas exposer les détails de santé

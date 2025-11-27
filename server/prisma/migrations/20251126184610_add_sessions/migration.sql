@@ -5,4 +5,5 @@
 
 */
 -- AlterTable
-ALTER TABLE "Session" DROP COLUMN "revokedReason";
+ALTER TABLE "Session"
+    DROP COLUMN "revokedReason";

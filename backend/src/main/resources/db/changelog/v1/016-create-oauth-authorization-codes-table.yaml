@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: 016-create-oauth-authorization-codes-table
+      author: petcare
+      changes:
+        - createTable:
+            tableName: oauth_authorization_codes
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_oauth_code_user
+                    references: users(id)
+              - column:
+                  name: access_token
+                  type: varchar(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: refresh_token
+                  type: varchar(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: used
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            indexName: idx_oauth_code
+            tableName: oauth_authorization_codes
+            unique: true
+            columns:
+              - column:
+                  name: code
+
+        - createIndex:
+            indexName: idx_oauth_expires
+            tableName: oauth_authorization_codes
+            columns:
+              - column:
+                  name: expires_at
