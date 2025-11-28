@@ -8,6 +8,9 @@ import CalendarPage from "@/pages/CalendarPage.tsx";
 import PetProfilePage from "@/pages/PetProfilePage.tsx";
 import SettingsPage from "@/pages/SettingsPage.tsx";
 import PetsPage from "@/pages/PetsPage.tsx";
+import EmailSentPage from "@/pages/EmailSentPage.tsx";
+import VerifyEmailPage from "@/pages/VerifyEmailPage.tsx";
+import ResendVerificationPage from "@/pages/ResendVerificationPage.tsx";
 import {useAuth} from "@/context/AuthContext.tsx";
 
 function RootRedirect() {
@@ -24,6 +27,11 @@ function App() {
             <Route path="/" element={<RootRedirect/>}/>
             <Route path="/register" element={<RegisterPage/>}/>
             <Route path="/login" element={<LoginPage/>}/>
+
+            {/* Routes de vérification d'email */}
+            <Route path="/auth/verify-email-sent" element={<EmailSentPage/>}/>
+            <Route path="/auth/verify-email" element={<VerifyEmailPage/>}/>
+            <Route path="/auth/resend-verification" element={<ResendVerificationPage/>}/>
 
             {/* Routes Protégées + Layout */}
             <Route element={<ProtectedRoute/>}>
