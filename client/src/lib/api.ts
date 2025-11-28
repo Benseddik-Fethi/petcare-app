@@ -159,7 +159,7 @@ api.interceptors.response.use(
  * Vérifie l'email avec le token reçu par email
  */
 export async function verifyEmail(token: string): Promise<{ success: boolean; message: string }> {
-    const response = await api.post(`/users/verify-email?token=${token}`);
+    const response = await api.post(`/v1/users/verify-email?token=${token}`);
     return response.data;
 }
 
@@ -167,7 +167,7 @@ export async function verifyEmail(token: string): Promise<{ success: boolean; me
  * Renvoie l'email de vérification
  */
 export async function resendVerificationEmail(email: string): Promise<{ message: string }> {
-    const response = await api.post('/users/resend-verification', { email });
+    const response = await api.post('/v1/users/resend-verification', { email });
     return response.data;
 }
 
@@ -175,6 +175,6 @@ export async function resendVerificationEmail(email: string): Promise<{ message:
  * Envoie un email de vérification à l'utilisateur authentifié
  */
 export async function sendVerificationEmail(): Promise<{ message: string }> {
-    const response = await api.post('/users/send-verification');
+    const response = await api.post('/v1/users/send-verification');
     return response.data;
 }
