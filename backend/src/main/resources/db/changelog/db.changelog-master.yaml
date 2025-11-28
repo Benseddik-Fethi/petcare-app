@@ -59,3 +59,10 @@ databaseChangeLog:
       file: db/changelog/v1/015-add-email-verified-to-users.yaml
   - include:
       file: db/changelog/v1/016-create-oauth-authorization-codes-table.yaml
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # TEST DATA (dev/test context only)
+  # ─────────────────────────────────────────────────────────────────────────────
+  - include:
+      file: db/changelog/v1/017-insert-test-data.yaml
+      context: dev,test

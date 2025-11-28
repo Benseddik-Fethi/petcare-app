@@ -1,0 +1,11 @@
+id,name,address,phone,email,website,opening_hours
+550e8400-e29b-41d4-a716-446655440001,Clinique Vétérinaire du Centre,15 Rue de la République 75001 Paris,01 42 33 44 55,contact@clinique-centre-paris.fr,https://www.clinique-centre-paris.fr,"Lun-Ven: 9h-19h, Sam: 9h-17h"
+550e8400-e29b-41d4-a716-446655440002,Cabinet Vétérinaire Saint-Germain,28 Boulevard Saint-Germain 75005 Paris,01 43 26 78 90,info@vet-stgermain.fr,https://www.vet-stgermain.fr,"Lun-Ven: 8h30-18h30, Sam: 10h-16h"
+550e8400-e29b-41d4-a716-446655440003,Clinique Vétérinaire des Animaux,42 Avenue des Champs-Élysées 75008 Paris,01 45 62 33 11,accueil@clinique-animaux.com,https://www.clinique-animaux.com,"Lun-Dim: 24h/24 (urgences)"
+550e8400-e29b-41d4-a716-446655440004,VetoLyon - Clinique Part-Dieu,89 Rue de la Part-Dieu 69003 Lyon,04 78 95 12 34,contact@vetolyon.fr,https://www.vetolyon.fr,"Lun-Ven: 9h-19h, Sam: 9h-13h"
+550e8400-e29b-41d4-a716-446655440005,Clinique Vétérinaire Bordeaux Sud,156 Avenue de Thouars 33400 Talence,05 56 84 22 11,bordeaux@clinique-sud.fr,https://www.clinique-sud.fr,"Lun-Ven: 8h-20h, Sam: 9h-18h"
+550e8400-e29b-41d4-a716-446655440006,Cabinet Vétérinaire Nice Riviera,12 Promenade des Anglais 06000 Nice,04 93 87 65 43,info@vet-nice-riviera.fr,https://www.vet-nice-riviera.fr,"Lun-Sam: 9h-18h"
+550e8400-e29b-41d4-a716-446655440007,Clinique Vétérinaire Toulouse Capitole,34 Rue du Taur 31000 Toulouse,05 61 23 45 67,contact@vet-toulouse.com,https://www.vet-toulouse.com,"Lun-Ven: 9h-19h"
+550e8400-e29b-41d4-a716-446655440008,Clinique Vétérinaire Marseille Vieux-Port,78 Quai du Port 13002 Marseille,04 91 55 33 22,accueil@clinique-marseille.fr,https://www.clinique-marseille.fr,"Lun-Dim: 8h-22h (urgences)"
+550e8400-e29b-41d4-a716-446655440009,VetoNantes - Clinique de l'Erdre,23 Quai de l'Erdre 44000 Nantes,02 40 73 28 19,contact@vetonantes.fr,https://www.vetonantes.fr,"Lun-Ven: 9h-19h, Sam: 9h-17h"
+550e8400-e29b-41d4-a716-446655440010,Clinique Vétérinaire Strasbourg Europe,67 Avenue de l'Europe 67000 Strasbourg,03 88 35 44 55,info@clinique-strasbourg.eu,https://www.clinique-strasbourg.eu,"Lun-Ven: 8h30-18h30"

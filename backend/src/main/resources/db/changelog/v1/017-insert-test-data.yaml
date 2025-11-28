@@ -1,0 +1,98 @@
+databaseChangeLog:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DONNÉES DE TEST - Cliniques et Vétérinaires
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  - changeSet:
+      id: 017-insert-clinics-test-data
+      author: petcare
+      context: dev,test
+      comment: "Insertion de 10 cliniques vétérinaires de test (France)"
+      changes:
+        - loadData:
+            file: db/changelog/data/clinics.csv
+            tableName: clinics
+            separator: ","
+            quotchar: '"'
+            encoding: UTF-8
+            relativeToChangelogFile: false
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+              - column:
+                  name: name
+                  type: string
+              - column:
+                  name: address
+                  type: string
+              - column:
+                  name: phone
+                  type: string
+              - column:
+                  name: email
+                  type: string
+              - column:
+                  name: website
+                  type: string
+              - column:
+                  name: opening_hours
+                  type: string
+      rollback:
+        - delete:
+            tableName: clinics
+            where: "id IN (
+              '550e8400-e29b-41d4-a716-446655440001',
+              '550e8400-e29b-41d4-a716-446655440002',
+              '550e8400-e29b-41d4-a716-446655440003',
+              '550e8400-e29b-41d4-a716-446655440004',
+              '550e8400-e29b-41d4-a716-446655440005',
+              '550e8400-e29b-41d4-a716-446655440006',
+              '550e8400-e29b-41d4-a716-446655440007',
+              '550e8400-e29b-41d4-a716-446655440008',
+              '550e8400-e29b-41d4-a716-446655440009',
+              '550e8400-e29b-41d4-a716-446655440010'
+            )"
+
+  - changeSet:
+      id: 017-insert-vets-test-data
+      author: petcare
+      context: dev,test
+      comment: "Insertion de 20 vétérinaires de test avec spécialités variées"
+      changes:
+        - loadData:
+            file: db/changelog/data/vets.csv
+            tableName: vets
+            separator: ","
+            quotchar: '"'
+            encoding: UTF-8
+            relativeToChangelogFile: false
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+              - column:
+                  name: first_name
+                  type: string
+              - column:
+                  name: last_name
+                  type: string
+              - column:
+                  name: specialty
+                  type: string
+              - column:
+                  name: phone
+                  type: string
+              - column:
+                  name: email
+                  type: string
+              - column:
+                  name: avatar
+                  type: string
+              - column:
+                  name: clinic_id
+                  type: uuid
+      rollback:
+        - delete:
+            tableName: vets
+            where: "id LIKE '660e8400-e29b-41d4-a716-4466554400%'"

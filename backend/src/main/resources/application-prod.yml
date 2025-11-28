@@ -9,6 +9,10 @@ spring:
       ddl-auto: none  # 🛡️ CRITIQUE : Jamais de modification auto du schéma en prod
     show-sql: false
 
+  # 🛡️ LIQUIBASE - PRODUCTION : Pas de données de test
+  liquibase:
+    contexts: prod  # 🛡️ CRITIQUE : Empêche le chargement des données de test
+
   # Désactiver les outils de dev
   devtools:
     restart:

@@ -1,0 +1,21 @@
+id,first_name,last_name,specialty,phone,email,avatar,clinic_id
+660e8400-e29b-41d4-a716-446655440001,Sophie,Martin,Médecine générale,01 42 33 44 56,sophie.martin@clinique-centre-paris.fr,🩺,550e8400-e29b-41d4-a716-446655440001
+660e8400-e29b-41d4-a716-446655440002,Pierre,Dubois,Chirurgie,01 42 33 44 57,pierre.dubois@clinique-centre-paris.fr,🔬,550e8400-e29b-41d4-a716-446655440001
+660e8400-e29b-41d4-a716-446655440003,Marie,Lefebvre,Dermatologie,01 43 26 78 91,marie.lefebvre@vet-stgermain.fr,💊,550e8400-e29b-41d4-a716-446655440002
+660e8400-e29b-41d4-a716-446655440004,Thomas,Rousseau,Cardiologie,01 43 26 78 92,thomas.rousseau@vet-stgermain.fr,❤️,550e8400-e29b-41d4-a716-446655440002
+660e8400-e29b-41d4-a716-446655440005,Émilie,Bernard,Urgences et soins intensifs,01 45 62 33 12,emilie.bernard@clinique-animaux.com,🚑,550e8400-e29b-41d4-a716-446655440003
+660e8400-e29b-41d4-a716-446655440006,Alexandre,Moreau,NAC (Nouveaux Animaux de Compagnie),01 45 62 33 13,alexandre.moreau@clinique-animaux.com,🐰,550e8400-e29b-41d4-a716-446655440003
+660e8400-e29b-41d4-a716-446655440007,Camille,Petit,Médecine féline,04 78 95 12 35,camille.petit@vetolyon.fr,🐱,550e8400-e29b-41d4-a716-446655440004
+660e8400-e29b-41d4-a716-446655440008,Nicolas,Durand,Orthopédie,04 78 95 12 36,nicolas.durand@vetolyon.fr,🦴,550e8400-e29b-41d4-a716-446655440004
+660e8400-e29b-41d4-a716-446655440009,Julie,Laurent,Dentisterie,05 56 84 22 12,julie.laurent@clinique-sud.fr,🦷,550e8400-e29b-41d4-a716-446655440005
+660e8400-e29b-41d4-a716-446655440010,François,Simon,Ophtalmologie,05 56 84 22 13,francois.simon@clinique-sud.fr,👁️,550e8400-e29b-41d4-a716-446655440005
+660e8400-e29b-41d4-a716-446655440011,Isabelle,Michel,Médecine générale,04 93 87 65 44,isabelle.michel@vet-nice-riviera.fr,🩺,550e8400-e29b-41d4-a716-446655440006
+660e8400-e29b-41d4-a716-446655440012,Laurent,Garcia,Reproduction,04 93 87 65 45,laurent.garcia@vet-nice-riviera.fr,🐾,550e8400-e29b-41d4-a716-446655440006
+660e8400-e29b-41d4-a716-446655440013,Céline,Martinez,Comportementalisme,05 61 23 45 68,celine.martinez@vet-toulouse.com,🧠,550e8400-e29b-41d4-a716-446655440007
+660e8400-e29b-41d4-a716-446655440014,Julien,Rodriguez,Médecine générale,05 61 23 45 69,julien.rodriguez@vet-toulouse.com,🩺,550e8400-e29b-41d4-a716-446655440007
+660e8400-e29b-41d4-a716-446655440015,Aurélie,Lopez,Urgences,04 91 55 33 23,aurelie.lopez@clinique-marseille.fr,🚑,550e8400-e29b-41d4-a716-446655440008
+660e8400-e29b-41d4-a716-446655440016,Sébastien,Gonzalez,Chirurgie,04 91 55 33 24,sebastien.gonzalez@clinique-marseille.fr,🔬,550e8400-e29b-41d4-a716-446655440008
+660e8400-e29b-41d4-a716-446655440017,Caroline,Sanchez,Imagerie médicale,02 40 73 28 20,caroline.sanchez@vetonantes.fr,📷,550e8400-e29b-41d4-a716-446655440009
+660e8400-e29b-41d4-a716-446655440018,David,Perez,Nutrition,02 40 73 28 21,david.perez@vetonantes.fr,🥗,550e8400-e29b-41d4-a716-446655440009
+660e8400-e29b-41d4-a716-446655440019,Nathalie,Robert,Dermatologie,03 88 35 44 56,nathalie.robert@clinique-strasbourg.eu,💊,550e8400-e29b-41d4-a716-446655440010
+660e8400-e29b-41d4-a716-446655440020,Vincent,Richard,Médecine générale,03 88 35 44 57,vincent.richard@clinique-strasbourg.eu,🩺,550e8400-e29b-41d4-a716-446655440010
