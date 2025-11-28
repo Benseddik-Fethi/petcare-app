@@ -62,6 +62,14 @@ public interface SessionRepository extends JpaRepository<Session, UUID> {
     int deleteExpiredSessions(Instant now);
 
     /**
+     * Supprime les sessions révoquées anciennes (nettoyage audit).
+     * Les sessions révoquées sont conservées 30 jours pour audit/forensics.
+     */
+    @Modifying
+    @Query("DELETE FROM Session s WHERE s.revokedAt IS NOT NULL AND s.revokedAt < :before")
+    int deleteRevokedSessionsOlderThan(Instant before);
+
+    /**
      * Compte les sessions actives d'un utilisateur.
      */
     @Query("""
