@@ -47,15 +47,6 @@ public class EmailServiceImpl implements EmailService {
         this.emailTemplateEngine = emailTemplateEngine;
     }
 
-    @Value("${app.mail.enabled:false}")
-    private boolean mailEnabled;
-
-    @Value("${app.mail.from:noreply@petcare.com}")
-    private String fromAddress;
-
-    @Value("${app.name:PetCare}")
-    private String appName;
-
     @Override
     @Async
     public void sendVerificationEmail(String to, String firstName, String verificationLink) {

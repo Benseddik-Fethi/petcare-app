@@ -11,6 +11,7 @@ import fr.benseddik.backend.repository.UserRepository;
 import fr.benseddik.backend.security.CookieUtils;
 import fr.benseddik.backend.service.JwtService;
 import fr.benseddik.backend.config.JwtProperties;
+import fr.benseddik.backend.util.IpAddressResolver;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
     private final CookieUtils cookieUtils;
+    private final IpAddressResolver ipAddressResolver;
 
     @Value("${app.security.cors.allowed-origins:http://localhost:5173}")
     private String frontendUrl;
@@ -99,7 +101,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         auditLogRepository.save(AuditLog.oauthLogin(
                 user,
                 AuthProvider.valueOf(provider.toUpperCase()),
-                getClientIp(request),
+                ipAddressResolver.resolveClientIp(request),
                 request.getHeader("User-Agent")
         ));
 
@@ -147,19 +149,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Session session = Session.builder()
                 .user(user)
                 .refreshTokenHash(jwtService.hashToken(refreshToken))
-                .ipAddress(getClientIp(request))
+                .ipAddress(ipAddressResolver.resolveClientIp(request))
                 .userAgent(request.getHeader("User-Agent"))
                 .expiresAt(Instant.now().plus(jwtProperties.refreshToken().expiration()))
                 .build();
 
         sessionRepository.save(session);
-    }
-
-    private String getClientIp(HttpServletRequest request) {
-        String xForwardedFor = request.getHeader("X-Forwarded-For");
-        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
-            return xForwardedFor.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 }

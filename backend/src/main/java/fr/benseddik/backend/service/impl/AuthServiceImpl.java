@@ -21,6 +21,7 @@ import fr.benseddik.backend.security.CustomUserDetails;
 import fr.benseddik.backend.service.AuthService;
 import fr.benseddik.backend.service.EmailService;
 import fr.benseddik.backend.service.JwtService;
+import fr.benseddik.backend.util.IpAddressResolver;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +61,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtProperties jwtProperties;
     private final SecurityProperties securityProperties;
     private final PasswordEncoder passwordEncoder;
+    private final IpAddressResolver ipAddressResolver;
 
     @Value("${app.frontend-url:http://localhost:5173}")
     private String frontendUrl;
@@ -125,7 +127,7 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public AuthResponse login(LoginRequest request, HttpServletRequest httpRequest) {
-        String ip = getClientIp(httpRequest);
+        String ip = ipAddressResolver.resolveClientIp(httpRequest);
         String userAgent = httpRequest.getHeader("User-Agent");
 
         // Rechercher l'utilisateur
@@ -250,7 +252,7 @@ public class AuthServiceImpl implements AuthService {
                     // Log
                     auditLogRepository.save(AuditLog.logout(
                             session.getUser(),
-                            getClientIp(httpRequest)
+                            ipAddressResolver.resolveClientIp(httpRequest)
                     ));
 
                     log.info("Déconnexion: {}", session.getUser().getEmail());
@@ -285,7 +287,7 @@ public class AuthServiceImpl implements AuthService {
         Session session = Session.builder()
                 .user(user)
                 .refreshTokenHash(jwtService.hashToken(refreshToken))
-                .ipAddress(getClientIp(httpRequest))
+                .ipAddress(ipAddressResolver.resolveClientIp(httpRequest))
                 .userAgent(httpRequest.getHeader("User-Agent"))
                 .expiresAt(Instant.now().plus(jwtProperties.refreshToken().expiration()))
                 .build();
@@ -328,14 +330,4 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    /**
-     * Récupère l'adresse IP du client.
-     */
-    private String getClientIp(HttpServletRequest request) {
-        String xForwardedFor = request.getHeader("X-Forwarded-For");
-        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
-            return xForwardedFor.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
-    }
 }
