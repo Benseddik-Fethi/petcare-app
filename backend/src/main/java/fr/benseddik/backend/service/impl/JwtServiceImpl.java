@@ -6,6 +6,7 @@ import fr.benseddik.backend.service.JwtService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +52,42 @@ public class JwtServiceImpl implements JwtService {
                 .requireIssuer(jwtProperties.issuer())
                 .requireAudience(jwtProperties.audience())
                 .build();
+    }
+
+    /**
+     * 🛡️ SÉCURITÉ CRITIQUE : Validation du secret JWT au démarrage.
+     *
+     * Vérifie que :
+     * - Le secret n'est pas la valeur par défaut (CRITIQUE)
+     * - Le secret fait au minimum 512 bits (64 caractères) pour HMAC-SHA256
+     *
+     * Si la validation échoue, l'application refuse de démarrer.
+     */
+    @PostConstruct
+    public void validateJwtConfiguration() {
+        String secret = jwtProperties.secret();
+
+        // Vérifier que le secret par défaut n'est pas utilisé
+        if (secret.startsWith("CHANGE_ME_IN_PRODUCTION")) {
+            throw new IllegalStateException(
+                "🔴 SÉCURITÉ CRITIQUE: JWT_SECRET n'est pas configuré! " +
+                "Définissez la variable d'environnement JWT_SECRET avec un secret aléatoire de 512 bits minimum."
+            );
+        }
+
+        // Vérifier la longueur minimale (512 bits = 64 caractères pour sécurité bancaire)
+        if (secret.length() < 64) {
+            throw new IllegalStateException(
+                String.format(
+                    "🔴 SÉCURITÉ CRITIQUE: JWT_SECRET trop court (%d caractères). " +
+                    "Pour un niveau de sécurité bancaire, le secret doit faire au minimum 512 bits (64 caractères). " +
+                    "Générez un secret aléatoire avec: openssl rand -base64 64",
+                    secret.length()
+                )
+            );
+        }
+
+        log.info("✅ JWT secret validé: {} bits", secret.length() * 8);
     }
 
     @Override

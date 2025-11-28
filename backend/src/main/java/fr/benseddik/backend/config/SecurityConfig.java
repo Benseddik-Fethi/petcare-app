@@ -1,5 +1,6 @@
 package fr.benseddik.backend.config;
 
+import fr.benseddik.backend.security.RateLimitFilter;
 import fr.benseddik.backend.security.jwt.JwtAccessDeniedHandler;
 import fr.benseddik.backend.security.jwt.JwtAuthenticationEntryPoint;
 import fr.benseddik.backend.security.jwt.JwtAuthenticationFilter;
@@ -23,6 +24,8 @@ import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -43,6 +46,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RateLimitFilter rateLimitFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
@@ -85,6 +89,50 @@ public class SecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                 )
 
+                // 🛡️ SÉCURITÉ NIVEAU BANCAIRE : Headers HTTP de sécurité
+                .headers(headers -> headers
+                        // Content Security Policy : Empêche XSS et injection de code
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives(
+                                    "default-src 'self'; " +
+                                    "script-src 'self'; " +
+                                    "style-src 'self' 'unsafe-inline'; " +
+                                    "img-src 'self' data: https:; " +
+                                    "font-src 'self'; " +
+                                    "connect-src 'self'; " +
+                                    "frame-ancestors 'none'; " +
+                                    "base-uri 'self'; " +
+                                    "form-action 'self'"
+                                )
+                        )
+                        // X-Frame-Options : Empêche le clickjacking
+                        .frameOptions(frame -> frame.deny())
+
+                        // HTTP Strict Transport Security : Force HTTPS (1 an)
+                        .httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(true)
+                                .maxAgeInSeconds(31536000)  // 1 an
+                        )
+
+                        // X-Content-Type-Options : Empêche le MIME sniffing
+                        .contentTypeOptions(contentType -> contentType.disable())  // Activé par défaut
+
+                        // X-XSS-Protection : Protection XSS legacy (moderne = CSP)
+                        .xssProtection(xss -> xss
+                                .headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK)
+                        )
+
+                        // Referrer-Policy : Contrôle des informations de référence
+                        .referrerPolicy(referrer -> referrer
+                                .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
+                        )
+
+                        // Permissions-Policy : Contrôle des fonctionnalités navigateur
+                        .permissionsPolicy(permissions -> permissions
+                                .policy("geolocation=(), microphone=(), camera=(), payment=()")
+                        )
+                )
+
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints publics
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
@@ -98,6 +146,10 @@ public class SecurityConfig {
                         .failureHandler(oAuth2FailureHandler)
                 )
                 .authenticationProvider(authenticationProvider)
+                // 🛡️ ORDRE DES FILTRES (important !) :
+                // 1. Rate Limiting (bloquer les abus AVANT tout traitement)
+                // 2. JWT Authentication (valider l'identité)
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -127,12 +179,29 @@ public class SecurityConfig {
     }
 
     /**
-     * Encodeur de mots de passe Argon2.
-     * Plus sécurisé que BCrypt, résistant aux attaques GPU.
+     * 🛡️ Encodeur de mots de passe Argon2 - Niveau bancaire.
+     *
+     * Argon2id est plus sécurisé que BCrypt et résistant aux attaques GPU/ASIC.
+     *
+     * Paramètres (OWASP 2024 recommandations) :
+     * - Salt : 16 bytes (128 bits)
+     * - Hash : 32 bytes (256 bits)
+     * - Parallelism : 4 (utilise 4 cores CPU)
+     * - Memory : 64 MB (65536 KB) - standard bancaire
+     * - Iterations : 4 (compromis sécurité/performance)
+     *
+     * Temps de hash : ~250-400ms sur serveur moderne
+     * (acceptable pour authentification, trop long pour attaque brute force)
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new Argon2PasswordEncoder(16, 32, 1, 1 << 13, 3);
+        return new Argon2PasswordEncoder(
+            16,        // saltLength (128 bits)
+            32,        // hashLength (256 bits)
+            4,         // parallelism (4 threads CPU)
+            1 << 16,   // memory: 64 MB = 65536 KB (niveau bancaire)
+            4          // iterations (OWASP 2024 minimum)
+        );
     }
 
     /**

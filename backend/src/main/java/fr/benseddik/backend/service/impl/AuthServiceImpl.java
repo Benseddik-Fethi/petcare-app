@@ -114,20 +114,45 @@ public class AuthServiceImpl implements AuthService {
         log.debug("Email de vérification envoyé à: {}", user.getEmail());
     }
 
+    /**
+     * 🛡️ SÉCURITÉ : Protection contre les timing attacks.
+     *
+     * Cette méthode exécute toujours le hashage du mot de passe (opération coûteuse)
+     * même si l'utilisateur n'existe pas, pour éviter qu'un attaquant puisse déduire
+     * l'existence d'un compte en mesurant le temps de réponse.
+     *
+     * Timing constant : ~100-500ms (temps de hashage Argon2) dans tous les cas.
+     */
     @Override
     public AuthResponse login(LoginRequest request, HttpServletRequest httpRequest) {
         String ip = getClientIp(httpRequest);
         String userAgent = httpRequest.getHeader("User-Agent");
 
         // Rechercher l'utilisateur
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> {
-                    // Log l'échec (utilisateur inexistant)
-                    auditLogRepository.save(AuditLog.loginFailed(
-                            request.email(), ip, userAgent, "User not found"
-                    ));
-                    return new AuthenticationException("Email ou mot de passe incorrect");
-                });
+        User user = userRepository.findByEmail(request.email()).orElse(null);
+
+        // 🛡️ PROTECTION TIMING ATTACK : Toujours hasher le mot de passe
+        // Même si l'utilisateur n'existe pas, on hash pour avoir un temps de réponse constant
+        boolean passwordMatches = false;
+        if (user != null) {
+            passwordMatches = passwordEncoder.matches(request.password(), user.getPasswordHash());
+        } else {
+            // Hash factice pour simuler le temps de vérification (protection timing attack)
+            // Utilise un hash Argon2 pré-calculé pour éviter de générer un nouveau salt à chaque fois
+            // Format : $argon2id$v=19$m=65536,t=4,p=4$salt$hash
+            passwordEncoder.matches(
+                request.password(),
+                // Hash factice d'un mot de passe aléatoire (jamais utilisé, juste pour le timing)
+                // Paramètres: m=65536 (64MB), t=4 (iterations), p=4 (parallelism)
+                "$argon2id$v=19$m=65536,t=4,p=4$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            );
+
+            // Log l'échec (utilisateur inexistant) APRÈS le hashage
+            auditLogRepository.save(AuditLog.loginFailed(
+                    request.email(), ip, userAgent, "User not found"
+            ));
+            throw new AuthenticationException("Email ou mot de passe incorrect");
+        }
 
         // Vérifier si le compte est verrouillé
         if (user.isAccountLocked()) {
@@ -135,8 +160,8 @@ public class AuthServiceImpl implements AuthService {
             throw new AccountLockedException(user.getLockedUntil());
         }
 
-        // Vérifier le mot de passe
-        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+        // Vérifier le résultat du mot de passe
+        if (!passwordMatches) {
             handleFailedLogin(user, ip, userAgent);
             throw new AuthenticationException("Email ou mot de passe incorrect");
         }

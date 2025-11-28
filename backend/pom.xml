@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.8</version>
+		<version>3.4.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>fr.benseddik</groupId>
@@ -132,6 +132,21 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk18on</artifactId>
             <version>1.78.1</version>
+        </dependency>
+
+        <!-- ═══════════════════════════════════════════════════════════════
+             RATE LIMITING (Protection DDoS et brute force distribué)
+             ═══════════════════════════════════════════════════════════════ -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j-core</artifactId>
+            <version>8.10.1</version>
+        </dependency>
+
+        <!-- Cache pour rate limiting (en mémoire pour dev, Redis pour prod) -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
         </dependency>
 
         <!-- ═══════════════════════════════════════════════════════════════
