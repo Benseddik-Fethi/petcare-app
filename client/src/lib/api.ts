@@ -150,3 +150,31 @@ api.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+
+// ============================================================================
+// EMAIL VERIFICATION API
+// ============================================================================
+
+/**
+ * Vérifie l'email avec le token reçu par email
+ */
+export async function verifyEmail(token: string): Promise<{ success: boolean; message: string }> {
+    const response = await api.post(`/users/verify-email?token=${token}`);
+    return response.data;
+}
+
+/**
+ * Renvoie l'email de vérification
+ */
+export async function resendVerificationEmail(email: string): Promise<{ message: string }> {
+    const response = await api.post('/users/resend-verification', { email });
+    return response.data;
+}
+
+/**
+ * Envoie un email de vérification à l'utilisateur authentifié
+ */
+export async function sendVerificationEmail(): Promise<{ message: string }> {
+    const response = await api.post('/users/send-verification');
+    return response.data;
+}

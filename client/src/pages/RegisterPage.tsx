@@ -6,7 +6,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {Separator} from "@/components/ui/separator";
 import {api} from "@/lib/api";
 import {useGoogleLogin} from '@react-oauth/google';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {FacebookIcon, GoogleIcon} from "@/components/ui/Icons";
 import {isAxiosError} from "axios";
 import {useAuth} from "@/context/AuthContext";
@@ -25,6 +25,7 @@ const registerSchema = z.object({
 });
 
 export default function RegisterPage() {
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         firstName: "",
@@ -45,7 +46,10 @@ export default function RegisterPage() {
                 firstName: payload.firstName,
                 lastName: payload.lastName
             });
-            login(data.user, data.accessToken);
+
+            // ✅ Après inscription, rediriger vers la page de confirmation email
+            // L'utilisateur doit vérifier son email avant de se connecter
+            navigate(`/auth/verify-email-sent?email=${encodeURIComponent(payload.email)}`);
             setError(null);
         } catch (error) {
             if (error instanceof ZodError) {
