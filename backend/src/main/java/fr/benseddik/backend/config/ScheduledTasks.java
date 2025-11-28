@@ -1,6 +1,8 @@
 package fr.benseddik.backend.config;
 
+import fr.benseddik.backend.repository.PasswordResetTokenRepository;
 import fr.benseddik.backend.repository.SessionRepository;
+import fr.benseddik.backend.repository.VerificationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +27,8 @@ import java.time.Instant;
 public class ScheduledTasks {
 
     private final SessionRepository sessionRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     /**
      * 🛡️ SÉCURITÉ : Nettoyage quotidien des sessions expirées.
@@ -81,6 +85,58 @@ public class ScheduledTasks {
             }
         } catch (Exception e) {
             log.error("❌ Erreur lors du nettoyage des sessions révoquées", e);
+        }
+    }
+
+    /**
+     * 🛡️ SÉCURITÉ : Nettoyage des tokens de vérification email expirés.
+     *
+     * Exécution : Tous les jours à 1h30 du matin
+     * Objectif : Supprimer les tokens de vérification expirés (24h)
+     *
+     * CRON : "0 30 1 * * ?" = seconde 0, minute 30, heure 1, tous les jours
+     */
+    @Scheduled(cron = "0 30 1 * * ?")
+    @Transactional
+    public void cleanupExpiredVerificationTokens() {
+        log.info("🧹 Démarrage du nettoyage des tokens de vérification expirés...");
+
+        try {
+            int deletedCount = verificationTokenRepository.deleteExpiredTokens(Instant.now());
+
+            if (deletedCount > 0) {
+                log.info("✅ Tokens de vérification expirés supprimés: {}", deletedCount);
+            } else {
+                log.debug("✅ Aucun token de vérification expiré à supprimer");
+            }
+        } catch (Exception e) {
+            log.error("❌ Erreur lors du nettoyage des tokens de vérification", e);
+        }
+    }
+
+    /**
+     * 🛡️ SÉCURITÉ : Nettoyage des tokens de réinitialisation de mot de passe expirés.
+     *
+     * Exécution : Tous les jours à 1h45 du matin
+     * Objectif : Supprimer les tokens de reset expirés (1h)
+     *
+     * CRON : "0 45 1 * * ?" = seconde 0, minute 45, heure 1, tous les jours
+     */
+    @Scheduled(cron = "0 45 1 * * ?")
+    @Transactional
+    public void cleanupExpiredPasswordResetTokens() {
+        log.info("🧹 Démarrage du nettoyage des tokens de reset de mot de passe expirés...");
+
+        try {
+            int deletedCount = passwordResetTokenRepository.deleteExpiredTokens(Instant.now());
+
+            if (deletedCount > 0) {
+                log.info("✅ Tokens de reset expirés supprimés: {}", deletedCount);
+            } else {
+                log.debug("✅ Aucun token de reset expiré à supprimer");
+            }
+        } catch (Exception e) {
+            log.error("❌ Erreur lors du nettoyage des tokens de reset", e);
         }
     }
 }

@@ -53,7 +53,8 @@ public class AuthControllerAlias {
             HttpServletResponse httpResponse
     ) {
         AuthResponse response = authService.register(request, httpRequest);
-        cookieUtils.setAuthCookies(httpResponse, response.accessToken(), response.refreshToken());
+        cookieUtils.addAccessTokenCookie(httpResponse, response.accessToken());
+        cookieUtils.addRefreshTokenCookie(httpResponse, response.refreshToken());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -67,7 +68,8 @@ public class AuthControllerAlias {
             HttpServletResponse httpResponse
     ) {
         AuthResponse response = authService.login(request, httpRequest);
-        cookieUtils.setAuthCookies(httpResponse, response.accessToken(), response.refreshToken());
+        cookieUtils.addAccessTokenCookie(httpResponse, response.accessToken());
+        cookieUtils.addRefreshTokenCookie(httpResponse, response.refreshToken());
         return ResponseEntity.ok(response);
     }
 
@@ -90,7 +92,8 @@ public class AuthControllerAlias {
                 httpRequest
         );
 
-        cookieUtils.setAuthCookies(httpResponse, response.accessToken(), response.refreshToken());
+        cookieUtils.addAccessTokenCookie(httpResponse, response.accessToken());
+        cookieUtils.addRefreshTokenCookie(httpResponse, response.refreshToken());
         return ResponseEntity.ok(response);
     }
 
@@ -106,7 +109,7 @@ public class AuthControllerAlias {
                 .orElse(null);
 
         if (refreshToken != null) {
-            authService.logout(new RefreshTokenRequest(refreshToken));
+            authService.logout(refreshToken, httpRequest);
         }
 
         cookieUtils.clearAuthCookies(httpResponse);

@@ -3,6 +3,7 @@ package fr.benseddik.backend.security;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import fr.benseddik.backend.config.SecurityProperties;
+import fr.benseddik.backend.util.IpAddressResolver;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
@@ -37,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final SecurityProperties securityProperties;
+    private final IpAddressResolver ipAddressResolver;
 
     // Cache en mémoire (Caffeine) : IP -> Bucket
     // ⚠️ En production : utiliser Redis pour un cache distribué entre instances
@@ -57,7 +59,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             return;
         }
 
-        String ip = getClientIp(request);
+        String ip = ipAddressResolver.resolveClientIp(request);
         String path = request.getServletPath();
 
         // Déterminer la limite selon le type d'endpoint
@@ -112,26 +114,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
                path.startsWith("/api/v1/auth/refresh") ||
                path.startsWith("/api/v1/users/forgot-password") ||
                path.startsWith("/api/v1/users/reset-password");
-    }
-
-    /**
-     * Extrait l'IP du client (gère les proxies et load balancers).
-     */
-    private String getClientIp(HttpServletRequest request) {
-        // Headers standards pour IP derrière proxy/load balancer
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            // X-Forwarded-For peut contenir plusieurs IPs : "client, proxy1, proxy2"
-            // Prendre la première (IP du client)
-            return ip.split(",")[0].trim();
-        }
-
-        ip = request.getHeader("X-Real-IP");
-        if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-            return ip;
-        }
-
-        return request.getRemoteAddr();
     }
 
     @Override

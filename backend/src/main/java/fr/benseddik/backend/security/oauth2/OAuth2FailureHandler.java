@@ -13,7 +13,10 @@ import java.io.IOException;
 
 /**
  * Handler d'échec OAuth2.
- * Redirige vers le frontend avec un message d'erreur.
+ * Redirige vers le frontend avec un message d'erreur générique.
+ *
+ * 🛡️ SÉCURITÉ : Ne pas exposer les détails techniques de l'exception dans l'URL
+ * (visibles dans historique navigateur, logs proxy, headers Referer).
  */
 @Component
 @Slf4j
@@ -29,11 +32,16 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
             AuthenticationException exception
     ) throws IOException {
 
-        log.error("OAuth2 authentication failed: {}", exception.getMessage());
+        // Logger les détails complets côté serveur (avec stacktrace si nécessaire)
+        log.error("OAuth2 authentication failed - Type: {} - Message: {}",
+                exception.getClass().getSimpleName(),
+                exception.getMessage());
+        log.debug("OAuth2 failure details", exception);
 
+        // Redirection avec message générique (pas d'exposition de détails techniques)
         String targetUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/auth/error")
                 .queryParam("error", "oauth2_error")
-                .queryParam("message", exception.getLocalizedMessage())
+                .queryParam("message", "L'authentification a échoué. Veuillez réessayer.")
                 .build()
                 .toUriString();
 
