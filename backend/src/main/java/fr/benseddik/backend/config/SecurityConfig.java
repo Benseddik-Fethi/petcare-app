@@ -56,8 +56,11 @@ public class SecurityConfig {
 
     /**
      * Endpoints publics (sans authentification).
+     *
+     * ✅ Inclut les endpoints avec et sans /v1/ pour compatibilité frontend.
      */
     private static final String[] PUBLIC_ENDPOINTS = {
+            // Endpoints API v1
             "/api/v1/auth/**",
             "/api/v1/public/**",
             "/api/v1/users/verify-email",
@@ -65,6 +68,12 @@ public class SecurityConfig {
             "/api/v1/users/forgot-password",
             "/api/v1/users/reset-password",
             "/api/v1/users/reset-password/validate",
+
+            // ✅ Alias sans /v1/ pour rétrocompatibilité frontend React
+            "/api/auth/**",
+            "/api/csrf-token",
+
+            // Monitoring et documentation
             "/actuator/health",
             "/actuator/info",
             "/swagger-ui/**",
